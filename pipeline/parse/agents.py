@@ -23,5 +23,9 @@ async def parse_signal(stream):
         #log.debug(data)
         parsed_dict = parse_data(data)
         key = f"{parsed_dict['msg_src_dvc_no']}-{parsed_dict['msg_src_dvc_time']}"
+        bintopicname = f"bin-archive-{parsed_dict['msg_src_dvc_no']}"
+        bintopic = app.topic(bintopicname, value_serializer='raw')
         log.success("Normalised data with key : %s" % f"{parsed_dict['msg_src_dvc_no']}-{parsed_dict['msg_src_dvc_time']}")
         await output_topic.send(key=key, value=parsed_dict)
+        await bintopic.send(key,value=data)
+        
