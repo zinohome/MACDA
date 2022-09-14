@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#  #
+#  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
+#  #
+#  @Time    : 2021
+#  @Author  : Zhang Jun
+#  @Email   : ibmzhangjun@139.com
+#  @Software: MACDA
+
+from app import app
+from codec.nb5 import Nb5
+from pipeline.parse.models import input_topic, output_topic
+from utils.log import log as log
+
+def parse_data(data):
+    return Nb5.from_bytes_to_dict(data)
+
+@app.agent(input_topic)
+async def parse_signal(stream):
+    async for data in stream:
+        #log.debug(data)
+        parsed_dict = parse_data(data)
+        key = f"{parsed_dict['msg_src_dvc_no']}-{parsed_dict['msg_src_dvc_time']}"
+        log.success("Normalised data with key : %s" % f"{parsed_dict['msg_src_dvc_no']}-{parsed_dict['msg_src_dvc_time']}")
+        await output_topic.send(key=key, value=parsed_dict)
