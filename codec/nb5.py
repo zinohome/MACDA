@@ -231,9 +231,15 @@ class Nb5(KaitaiStruct):
                 else:
                     nb5dict[key] = 0
             if key in div100list:
-                nb5dict[key] = round(value/100,2)
+                if value/100 == value//100:
+                    nb5dict[key] = value//100
+                else:
+                    nb5dict[key] = round(value/100,2)
             if key in div10list:
-                nb5dict[key] = round(value/10,1)
+                if value/10 == value//10:
+                    nb5dict[key] = value//10
+                else:
+                    nb5dict[key] = round(value/10,1)
         return nb5dict
 
     def from_bytes_to_dict(bytesobj):
@@ -257,9 +263,15 @@ class Nb5(KaitaiStruct):
                 else:
                     nb5dict[key] = 0
             if key in div100list:
-                nb5dict[key] = round(value/100,2)
+                if value / 100 == value // 100:
+                    nb5dict[key] = value // 100
+                else:
+                    nb5dict[key] = round(value / 100, 2)
             if key in div10list:
-                nb5dict[key] = round(value/10,1)
+                if value / 10 == value // 10:
+                    nb5dict[key] = value // 10
+                else:
+                    nb5dict[key] = round(value / 10, 1)
         return nb5dict
 
 
