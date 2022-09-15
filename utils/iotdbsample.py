@@ -8,8 +8,8 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: MACDA
-import time
 import datetime
+import time
 from iotdb.Session import Session
 from iotdb.utils.IoTDBConstants import TSDataType, TSEncoding, Compressor
 
@@ -67,6 +67,7 @@ ts_srv_password = "root"
 session = Session(ts_srv_host, ts_srv_port, ts_srv_username, ts_srv_password)
 session.open(False)
 zone = session.get_time_zone()
+
 tsname = f"root.macda.dvc_{sampledict['msg_calc_dvc_no'].replace('-','_')}"
 tsexist = session.check_time_series_exists(tsname)
 recordvalue = []
@@ -82,7 +83,6 @@ if not tsexist:
         data_type_lst.append(TSDataType.BOOLEAN)
         recordvalue.append('0')
     for i in range(len(measurements_lst)):
-        recordvalue[i] = sampledict[measurements_lst[i]]
         if measurements_lst[i].startswith('msg_'):
             data_type_lst[i] = TSDataType.TEXT
         if measurements_lst[i].startswith('dvc_cft'):
@@ -101,17 +101,25 @@ if not tsexist:
             data_type_lst[i] = TSDataType.INT32
         if measurements_lst[i] == 'dvc_w_op_mode_u2':
             data_type_lst[i] = TSDataType.INT32
+        recordvalue[i] = sampledict[measurements_lst[i]]
+        if data_type_lst[i] == TSDataType.INT32:
+            recordvalue[i] = int(recordvalue[i])
+        if data_type_lst[i] == TSDataType.FLOAT:
+            recordvalue[i] = float(recordvalue[i])
+        if data_type_lst[i] == TSDataType.TEXT:
+            recordvalue[i] = str(recordvalue[i])
+        if data_type_lst[i] == TSDataType.BOOLEAN:
+            recordvalue[i] = bool(recordvalue[i])
     encoding_lst = [TSEncoding.PLAIN for _ in range(len(data_type_lst))]
     compressor_lst = [Compressor.SNAPPY for _ in range(len(data_type_lst))]
     session.create_aligned_time_series(
         tsname, measurements_lst, data_type_lst, encoding_lst, compressor_lst
     )
-    log.debug(recordvalue)
-    timestamp = time.mktime(datetime.datetime.strptime(sampledict['msg_calc_parse_time'], "%Y-%m-%d %H:%M:%S").timetuple())
+    timestamp = int(time.mktime(time.strptime(sampledict['msg_calc_parse_time'], "%Y-%m-%d %H:%M:%S")))*1000
+    log.debug(tsname)
     log.debug(timestamp)
-    session.insert_aligned_record(device_id=tsname,
-                                  timestamp=time.mktime(datetime.datetime.strptime(sampledict['msg_calc_parse_time'], "%Y-%m-%d %H:%M:%S").timetuple()),
-                                  measurements=measurements_lst,
-                                  data_types=data_type_lst,
-                                  values=recordvalue)
+    log.debug(measurements_lst)
+    log.debug(data_type_lst)
+    log.debug(recordvalue)
+    session.insert_aligned_record(device_id=tsname,timestamp=timestamp,measurements=measurements_lst,data_types=data_type_lst,values=recordvalue)
 session.close()

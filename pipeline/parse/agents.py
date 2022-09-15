@@ -13,6 +13,8 @@ from app import app
 from codec.nb5 import Nb5
 from pipeline.parse.models import input_topic, output_topic
 from utils.log import log as log
+from utils.tswriter import TSWriter
+
 
 def parse_data(data):
     return Nb5.from_bytes_to_dict(data)
@@ -28,4 +30,8 @@ async def parse_signal(stream):
         log.success("Normalised data with key : %s" % f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_dvc_time']}")
         await output_topic.send(key=key, value=parsed_dict)
         await bintopic.send(key=key,value=data)
+        tswriter = TSWriter(f"root.macda.dvc_{parsed_dict['msg_calc_dvc_no'].replace('-', '_')}")
+        session = tswriter.connect()
+        session.open(False)
+        tswriter.create_aligned_record(parsed_dict)
         
