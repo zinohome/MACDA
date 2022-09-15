@@ -8,6 +8,16 @@ from utils.log import log as log
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
+div10list = ['dvc_i_inner_temp','dvc_i_outer_temp','dvc_i_set_temp','dvc_i_seat_temp','dvc_i_veh_temp',
+    'dvc_i_fat_u1','dvc_i_rat_u1','dvc_i_sat_u11','dvc_i_sat_u12','dvc_i_dft_u11','dvc_i_dft_u12',
+    'dvc_w_crnt_u11','dvc_w_vol_u11','dvc_w_crnt_u12','dvc_w_vol_u12','dvc_i_suck_temp_u11','dvc_i_suck_pres_u11',
+    'dvc_i_sup_heat_u11','dvc_i_eev_pos_u11','dvc_i_suck_temp_u12','dvc_i_suck_pres_u12','dvc_i_sup_heat_u12',
+    'dvc_i_eev_pos_u12','dvc_w_pos_fad_u1','dvc_i_fat_u2','dvc_i_rat_u2','dvc_i_sat_u21','dvc_i_sat_u22',
+    'dvc_i_dft_u21','dvc_i_dft_u22','dvc_w_crnt_u21','dvc_w_vol_u21','dvc_w_crnt_u22','dvc_w_vol_u22',
+    'dvc_i_suck_temp_u21','dvc_i_suck_pres_u21','dvc_i_sup_heat_u21','dvc_i_eev_pos_u21','dvc_i_suck_temp_u22',
+    'dvc_i_suck_pres_u22','dvc_i_sup_heat_u22','dvc_i_eev_pos_u22','dvc_w_pos_fad_u2']
+div100list = ['dvc_w_freq_u11','dvc_w_freq_u12','dvc_w_freq_u21','dvc_w_freq_u22']
+
 class Nb5(KaitaiStruct):
     def __init__(self, _io, _parent=None, _root=None):
         self._io = _io
@@ -203,10 +213,10 @@ class Nb5(KaitaiStruct):
     def from_file_to_dict(binfile):
         nb5dict = Nb5.from_file(binfile).__dict__.copy()
         nb5dict[
-            'msg_src_dvc_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}-{nb5dict['msg_carriage_no']}"
+            'msg_calc_dvc_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}-{nb5dict['msg_carriage_no']}"
         nb5dict[
-            'msg_src_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
-        nb5dict['msg_src_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            'msg_calc_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
+        nb5dict['msg_calc_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         for key in ('_io', '_parent', '_root',
                     'msg_reversed1', 'msg_reversed2', 'msg_reversed3', 'msg_reversed4', 'msg_reversed5',
                     'dvc_cfbk_revers0', 'dvc_cfbk_revers1', 'dvc_cfbk_revers2',
@@ -220,15 +230,19 @@ class Nb5(KaitaiStruct):
                     nb5dict[key] = 1
                 else:
                     nb5dict[key] = 0
+            if key in div100list:
+                nb5dict[key] = round(value/100,2)
+            if key in div10list:
+                nb5dict[key] = round(value/10,1)
         return nb5dict
 
     def from_bytes_to_dict(bytesobj):
         nb5dict = Nb5.from_bytes(bytesobj).__dict__.copy()
         nb5dict[
-            'msg_src_dvc_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}-{nb5dict['msg_carriage_no']}"
+            'msg_calc_dvc_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}-{nb5dict['msg_carriage_no']}"
         nb5dict[
-            'msg_src_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
-        nb5dict['msg_src_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            'msg_calc_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
+        nb5dict['msg_calc_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         for key in ('_io', '_parent', '_root',
                     'msg_reversed1', 'msg_reversed2', 'msg_reversed3', 'msg_reversed4', 'msg_reversed5',
                     'dvc_cfbk_revers0', 'dvc_cfbk_revers1', 'dvc_cfbk_revers2',
@@ -242,6 +256,10 @@ class Nb5(KaitaiStruct):
                     nb5dict[key] = 1
                 else:
                     nb5dict[key] = 0
+            if key in div100list:
+                nb5dict[key] = round(value/100,2)
+            if key in div10list:
+                nb5dict[key] = round(value/10,1)
         return nb5dict
 
 
