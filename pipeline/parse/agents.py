@@ -31,7 +31,5 @@ async def parse_signal(stream):
         await output_topic.send(key=key, value=parsed_dict)
         await bintopic.send(key=key,value=data)
         tswriter = TSWriter(f"root.macda.dvc_{parsed_dict['msg_calc_dvc_no'].replace('-', '_')}")
-        session = tswriter.connect()
-        session.open(False)
         tswriter.create_aligned_record(parsed_dict)
         

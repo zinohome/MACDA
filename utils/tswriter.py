@@ -35,17 +35,20 @@ class Cached(type):
 class TSWriter(metaclass=Cached):
     def __init__(self, ts_name):
         self.ts_name = ts_name
+        self.session = None
         self.ts_srv_host = "192.168.32.195"
         self.ts_srv_port = "6667"
         self.ts_srv_username = "root"
         self.ts_srv_password = "root"
+        self.connect()
 
     def connect(self):
-        return Session(self.ts_srv_host, self.ts_srv_port, self.ts_srv_username, self.ts_srv_password)
+        self.session = Session(self.ts_srv_host, self.ts_srv_port, self.ts_srv_username, self.ts_srv_password)
 
-    def create_aligned_record(self,session,sampledict):
+    def create_aligned_record(self,sampledict):
         try:
-            tsexist = session.check_time_series_exists(self.ts_name)
+            self.session.open(False)
+            tsexist = self.session.check_time_series_exists(self.ts_name)
             # measurements_lst
             measurements_lst = list(sampledict.keys())
             measurements_lst.remove('msg_calc_dvc_time')
@@ -89,15 +92,18 @@ class TSWriter(metaclass=Cached):
             encoding_lst = [TSEncoding.PLAIN for _ in range(len(data_type_lst))]
             compressor_lst = [Compressor.SNAPPY for _ in range(len(data_type_lst))]
             if not tsexist:
-                session.create_aligned_time_series(
+                self.session.create_aligned_time_series(
                     self.ts_name, measurements_lst, data_type_lst, encoding_lst, compressor_lst
                 )
             timestamp = int(time.mktime(time.strptime(sampledict['msg_calc_parse_time'], "%Y-%m-%d %H:%M:%S")))*1000
-            session.insert_aligned_record(device_id=self.ts_name, timestamp=timestamp, measurements=measurements_lst,
+            self.session.insert_aligned_record(device_id=self.ts_name, timestamp=timestamp, measurements=measurements_lst,
                                           data_types=data_type_lst, values=recordvalue)
+            self.session.close()
         except Exception as exp:
             log.error('Exception at DSConfig.readconfig() %s ' % exp)
             traceback.print_exc()
+        finally:
+            self.session.close()
 
 if __name__ == '__main__':
     sampledict = {'msg_header_code01': 44, 'msg_header_code02': 1, 'msg_length': 242,
@@ -154,7 +160,4 @@ if __name__ == '__main__':
                   'dvc_dwopcount_fad_u2': 24, 'dvc_dwopcount_rad_u2': 23, 'msg_crc': 54882, 'msg_calc_dvc_no': '5-99-2',
                   'msg_calc_dvc_time': '2021-5-6 10:17:21', 'msg_calc_parse_time': '2022-09-15 12:21:47'}
     tswriter = TSWriter(f"root.macda.dvc_{sampledict['msg_calc_dvc_no'].replace('-','_')}")
-    session = tswriter.connect()
-    session.open(False)
-    tswriter.create_aligned_record(session,sampledict)
-    session.close()
+    tswriter.create_aligned_record(sampledict)
