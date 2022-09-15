@@ -21,6 +21,7 @@ def parse_data(data):
 
 @app.agent(input_topic)
 async def parse_signal(stream):
+    tswriter = TSWriter("root.macda.dvc")
     async for data in stream:
         #log.debug(data)
         parsed_dict = parse_data(data)
@@ -30,6 +31,6 @@ async def parse_signal(stream):
         log.success("Normalised data with key : %s" % f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_dvc_time']}")
         await output_topic.send(key=key, value=parsed_dict)
         await bintopic.send(key=key,value=data)
-        tswriter = TSWriter(f"root.macda.dvc_{parsed_dict['msg_calc_dvc_no'].replace('-', '_')}")
+        #tswriter = TSWriter(f"root.macda.dvc_{parsed_dict['msg_calc_dvc_no'].replace('-', '_')}")
         tswriter.create_aligned_record(parsed_dict)
         
