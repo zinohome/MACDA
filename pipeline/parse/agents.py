@@ -28,7 +28,7 @@ async def parse_signal(stream):
         key = f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_dvc_time']}"
         bintopicname = f"bin-archive-{parsed_dict['msg_calc_dvc_no']}"
         bintopic = app.topic(bintopicname, partitions=3, value_serializer='raw')
-        log.success("Normalised data with key : %s" % f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_dvc_time']}")
+        log.debug("Parsed data with key : %s" % f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_dvc_time']}")
         await output_topic.send(key=key, value=parsed_dict)
         await bintopic.send(key=key,value=data)
         #tswriter = TSWriter(f"root.macda.dvc_{parsed_dict['msg_calc_dvc_no'].replace('-', '_')}")
