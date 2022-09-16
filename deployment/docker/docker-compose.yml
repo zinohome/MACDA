@@ -1,0 +1,218 @@
+version: '3.7'
+services:
+  redpanda:
+    # NOTE: Please use the latest version here!
+    image: jointhero/redpanda:v22.2.2
+    container_name: redpanda
+    hostname: redpanda
+    restart: on-failure
+    command:
+    - redpanda start
+    - --smp 1
+    - --reserve-memory 0M
+    - --overprovisioned
+    - --node-id 0
+    - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+    - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://192.168.32.195:9092
+    - --pandaproxy-addr PLAINTEXT://0.0.0.0:28082,OUTSIDE://0.0.0.0:8082
+    - --advertise-pandaproxy-addr PLAINTEXT://redpanda:28082,OUTSIDE://192.168.32.195:8082
+    ports:
+    - 8081:8081
+    - 8082:8082
+    - 9092:9092
+    - 9644:9644
+    - 28082:28082
+    - 29092:29092
+    volumes:
+      - "/data/MACDA/redpanda/data:/var/lib/redpanda/data"
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 9092", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+  redpanda-console:
+    image: jointhero/redpanda-console:v22.2
+    container_name: redpanda-console
+    hostname: redpanda-console
+    restart: on-failure
+    entrypoint: /bin/sh
+    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:29092"]
+          schemaRegistry:
+            enabled: true
+            urls: ["http://redpanda:8081"]
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://redpanda:9644"]
+        connect:
+          enabled: true
+          clusters:
+            - name: kafka-connect
+              url: http://kafka-connect:8083
+    ports:
+      - 8080:8080
+    depends_on:
+      - redpanda
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 8080", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+  kafka-connect:
+    image: jointhero/kafka-connect:latest
+    hostname: kafka-connect
+    container_name: kafka-connect
+    restart: on-failure
+    depends_on:
+      - redpanda
+    ports:
+      - '8083:8083'
+    volumes:
+      - "/data/MACDA/connect/data:/data"
+    environment:
+      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
+      CONNECT_BOOTSTRAP_SERVERS: "redpanda:29092"
+      CONNECT_GROUP_ID: "kafka-connect-group"
+      CONNECT_CONFIG_STORAGE_TOPIC: "kafka-connect_config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "kafka-connect_offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "kafka-connect_status"
+      # Cannot be higher than the number of brokers in the Kafka cluster
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.converters.ByteArrayConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.converters.ByteArrayConverter"
+      CONNECT_PLUGIN_PATH: "/app/libs"
+      # Logging
+      # Connect client overrides
+      CONNECT_TASK_SHUTDOWN_GRACEFUL_TIMEOUT_MS: 30000
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 900000
+      CONNECT_CONSUMER_MAX_POLL_RECORDS: 500
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 8083", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    hostname: kafka-ui
+    container_name: kafka-ui
+    restart: on-failure
+    depends_on:
+      - redpanda
+    ports:
+      - "8180:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: redpanda
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 192.168.32.195:9092
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KAFKA_CLUSTERS_0_KSQLDBSERVER: "ksqldb-server:8088"
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://redpanda:8081"
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: "kafka-connect"
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: "http://kafka-connect:8083"
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 8180", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+  ksqldb-server:
+    image: confluentinc/ksqldb-server:0.27.2
+    hostname: ksqldb-server
+    container_name: ksqldb-server
+    restart: on-failure
+    depends_on:
+      - redpanda
+    ports:
+      - "8088:8088"
+    environment:
+      KSQL_LISTENERS: http://0.0.0.0:8088
+      KSQL_BOOTSTRAP_SERVERS: 192.168.32.195:9092
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 8088", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+  ksqldb-cli:
+    image: confluentinc/ksqldb-cli:0.27.2
+    container_name: ksqldb-cli
+    hostname: ksqldb-cli
+    restart: on-failure
+    depends_on:
+      - ksqldb-server
+    entrypoint: /bin/sh
+    tty: true
+  mirror-maker:
+    image: jointhero/mirror-maker:latest
+    container_name: mirror-maker
+    hostname: mirror-maker
+    restart: on-failure
+    depends_on:
+      - redpanda
+    environment:
+      SOURCE_CLUSTER_BOOTSTRAP_SERVERS: "192.168.32.195:39092"
+      SOURCE_CLUSTER_CONSUMER_GROUP: "redpanda-consume"
+      NUM_STREAMS: "1"
+      WHITELISTED_TOPICS: "signal-in"
+      SINK_CLUSTER_BOOTSTRAP_SERVERS: "192.168.32.195:9092"
+      LOG_LEVEL: "WARN"
+  minio:
+    # NOTE: Please use the latest version here!
+    image: minio/minio:latest
+    container_name: minio
+    hostname: minio
+    restart: on-failure
+    command: server --console-address ":9001" /data
+    environment:
+      MINIO_ROOT_USER: "macdaminio"
+      MINIO_ROOT_PASSWORD: "bgt56yhnPassw0rd"
+    ports:
+    - 9000:9000
+    - 9001:9001
+    volumes:
+      - "/data/MACDA/minio/data:/data"
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 9001", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+  iotdb:
+    # NOTE: Please use the latest version here!
+    image: apache/iotdb:latest
+    container_name: iotdb
+    hostname: iotdb
+    restart: on-failure
+    ports:
+    - 6667:6667
+    - 31999:31999
+    - 8181:8181
+    volumes:
+      - "/data/MACDA/iotdb/data:/iotdb/data"
+      - "/data/MACDA/iotdb/logs:/iotdb/logs"
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 6667", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+  iotdb-workbench:
+    # NOTE: Please use the latest version here!
+    image: jointhero/iotdb-workbench:latest
+    container_name: iotdb-workbench
+    hostname: iotdb-workbench
+    restart: on-failure
+    ports:
+    - 9089:9089
+    - 9090:80
+    depends_on:
+      - iotdb
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 9089", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5

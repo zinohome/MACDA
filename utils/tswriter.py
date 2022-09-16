@@ -46,8 +46,14 @@ class TSWriter(metaclass=Cached):
         self.session = Session(self.ts_srv_host, self.ts_srv_port, self.ts_srv_username, self.ts_srv_password)
         self.session.open(False)
 
+    def reconnect(self):
+        self.session = None
+        self.session = Session(self.ts_srv_host, self.ts_srv_port, self.ts_srv_username, self.ts_srv_password)
+        self.session.open(False)
+
     def create_aligned_record(self,sampledict):
         try:
+            self.session.open(False)
             ts_name = f"{self.storage_name}_{sampledict['msg_calc_dvc_no'].replace('-', '_')}"
             tsexist = self.session.check_time_series_exists(ts_name)
             # measurements_lst
@@ -100,7 +106,8 @@ class TSWriter(metaclass=Cached):
             self.session.insert_aligned_record(device_id=ts_name, timestamp=timestamp, measurements=measurements_lst,
                                           data_types=data_type_lst, values=recordvalue)
         except Exception as exp:
-            log.error('Exception at DSConfig.readconfig() %s ' % exp)
+            log.error('Exception at TSWriter.create_aligned_record() %s ' % exp)
+            self.reconnect()
             traceback.print_exc()
 
 if __name__ == '__main__':

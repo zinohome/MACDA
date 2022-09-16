@@ -1,0 +1,11 @@
+{
+    "name": "tj4-file-in",
+    "connector.class": "com.github.jcustenborder.kafka.connect.spooldir.SpoolDirBinaryFileSourceConnector",
+    "topic": "signal-in",
+    "input.path": "/data/input",
+    "finished.path": "/data/finished",
+    "error.path": "/data/error",
+    "input.file.pattern": "^FRAME-DATA_\\d*+\\.BIN$",
+    "empty.poll.wait.ms": "1000",
+    "file.minimum.age.ms": 1000
+}
