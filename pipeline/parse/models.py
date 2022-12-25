@@ -189,8 +189,9 @@ class ACSignal(faust.Record):
 output_schema = faust.Schema(
     key_type=str,
     value_type=ACSignal,
-    key_serializer="json",
+    key_serializer="raw",
     value_serializer="json",
 )
 
+#output_topic = app.topic(settings.PARSED_TOPIC_NAME, sechema=output_schema, partitions=3, value_serializer='json')
 output_topic = app.topic(settings.PARSED_TOPIC_NAME, partitions=3, value_serializer='json')

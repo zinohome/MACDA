@@ -2,10 +2,10 @@ version: '3.7'
 services:
   redpanda:
     # NOTE: Please use the latest version here!
-    image: jointhero/redpanda:v22.2.2
+    image: harbor.zinohome.com/macda/redpanda:v22.3.9
     container_name: redpanda
     hostname: redpanda
-    restart: on-failure
+    restart: unless-stopped
     command:
     - redpanda start
     - --smp 1
@@ -13,28 +13,30 @@ services:
     - --overprovisioned
     - --node-id 0
     - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
-    - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://192.168.32.195:9092
+    - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://192.168.32.160:9092
     - --pandaproxy-addr PLAINTEXT://0.0.0.0:28082,OUTSIDE://0.0.0.0:8082
-    - --advertise-pandaproxy-addr PLAINTEXT://redpanda:28082,OUTSIDE://192.168.32.195:8082
+    - --advertise-pandaproxy-addr PLAINTEXT://redpanda:28082,OUTSIDE://192.168.32.160:8082
+    #volumes:
+    #  - "/data/MACDA/redpanda/data:/var/lib/redpanda/data"
     ports:
-    - 8081:8081
-    - 8082:8082
-    - 9092:9092
-    - 9644:9644
-    - 28082:28082
-    - 29092:29092
-    volumes:
-      - "/data/MACDA/redpanda/data:/var/lib/redpanda/data"
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 9092", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
+    #  - 8081:8081
+    #  - 8082:8082
+      - 9092:9092
+    #  - 9644:9644
+    #  - 28082:28082
+    #  - 29092:29092
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 9092", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
   redpanda-console:
-    image: jointhero/redpanda-console:v22.2
+    image: harbor.zinohome.com/macda/redpanda-console:v2.1.1
     container_name: redpanda-console
     hostname: redpanda-console
-    restart: on-failure
+    restart: unless-stopped
     entrypoint: /bin/sh
     command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
     environment:
@@ -54,24 +56,26 @@ services:
           clusters:
             - name: kafka-connect
               url: http://kafka-connect:8083
-    ports:
-      - 8080:8080
+    #ports:
+    #  - 8080:8080
     depends_on:
       - redpanda
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 8080", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 8080", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
   kafka-connect:
-    image: jointhero/kafka-connect:latest
+    image: harbor.zinohome.com/macda/kafka-connect:latest
     hostname: kafka-connect
     container_name: kafka-connect
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       - redpanda
-    ports:
-      - '8083:8083'
+    #ports:
+    #  - '8083:8083'
     volumes:
       - "/data/MACDA/connect/data:/data"
     environment:
@@ -93,81 +97,90 @@ services:
       CONNECT_TASK_SHUTDOWN_GRACEFUL_TIMEOUT_MS: 30000
       CONNECT_OFFSET_FLUSH_INTERVAL_MS: 900000
       CONNECT_CONSUMER_MAX_POLL_RECORDS: 500
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 8083", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 8083", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
   kafka-ui:
-    image: provectuslabs/kafka-ui:latest
+    image: harbor.zinohome.com/macda/kafka-ui:latest
     hostname: kafka-ui
     container_name: kafka-ui
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       - redpanda
-    ports:
-      - "8180:8080"
+    #ports:
+    #  - "8180:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: redpanda
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 192.168.32.195:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 192.168.32.160:9092
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
       KAFKA_CLUSTERS_0_KSQLDBSERVER: "ksqldb-server:8088"
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://redpanda:8081"
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: "kafka-connect"
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: "http://kafka-connect:8083"
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 8180", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 8180", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
   ksqldb-server:
-    image: confluentinc/ksqldb-server:0.27.2
+    image: harbor.zinohome.com/macda/ksqldb-server:0.27.2
     hostname: ksqldb-server
     container_name: ksqldb-server
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       - redpanda
-    ports:
-      - "8088:8088"
+    #ports:
+    #  - "8088:8088"
     environment:
       KSQL_LISTENERS: http://0.0.0.0:8088
-      KSQL_BOOTSTRAP_SERVERS: 192.168.32.195:9092
+      KSQL_BOOTSTRAP_SERVERS: 192.168.32.160:9092
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 8088", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 8088", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
   ksqldb-cli:
-    image: confluentinc/ksqldb-cli:0.27.2
+    image: harbor.zinohome.com/macda/ksqldb-cli:0.27.2
     container_name: ksqldb-cli
     hostname: ksqldb-cli
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       - ksqldb-server
     entrypoint: /bin/sh
     tty: true
+    networks:
+      - macdanet
   mirror-maker:
-    image: jointhero/mirror-maker:latest
+    image: harbor.zinohome.com/macda/mirror-maker2:2.8.1
     container_name: mirror-maker
     hostname: mirror-maker
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       - redpanda
     environment:
-      SOURCE_CLUSTER_BOOTSTRAP_SERVERS: "192.168.32.195:39092"
-      SOURCE_CLUSTER_CONSUMER_GROUP: "redpanda-consume"
-      NUM_STREAMS: "1"
-      WHITELISTED_TOPICS: "signal-in"
-      SINK_CLUSTER_BOOTSTRAP_SERVERS: "192.168.32.195:9092"
-      LOG_LEVEL: "WARN"
+      SOURCE: "192.168.32.160:39092"
+      TOPICS: "signal-in"
+      DESTINATION: "192.168.32.160:9092"
+      REPLICATION_FACTOR: "1"
+      INTERNAL_REPLICATION_FACTOR: "1"
+    networks:
+      - macdanet
   minio:
     # NOTE: Please use the latest version here!
-    image: minio/minio:latest
+    image: harbor.zinohome.com/macda/minio:latest
     container_name: minio
     hostname: minio
-    restart: on-failure
+    restart: unless-stopped
     command: server --console-address ":9001" /data
     environment:
       MINIO_ROOT_USER: "macdaminio"
@@ -177,42 +190,86 @@ services:
     - 9001:9001
     volumes:
       - "/data/MACDA/minio/data:/data"
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 9001", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
-  iotdb:
-    # NOTE: Please use the latest version here!
-    image: apache/iotdb:latest
-    container_name: iotdb
-    hostname: iotdb
-    restart: on-failure
-    ports:
-    - 6667:6667
-    - 31999:31999
-    - 8181:8181
-    volumes:
-      - "/data/MACDA/iotdb/data:/iotdb/data"
-      - "/data/MACDA/iotdb/logs:/iotdb/logs"
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 6667", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
-  iotdb-workbench:
-    # NOTE: Please use the latest version here!
-    image: jointhero/iotdb-workbench:latest
-    container_name: iotdb-workbench
-    hostname: iotdb-workbench
-    restart: on-failure
-    ports:
-    - 9089:9089
-    - 9090:80
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 9001", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
+  createbuckets:
+    image: harbor.zinohome.com/macda/mc:latest
     depends_on:
-      - iotdb
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 9089", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add minio http://minio:9000 macdaminio bgt56yhnPassw0rd;
+      /usr/bin/mc mb minio/macda-archive-bucket;
+      exit 0;
+      "
+    networks:
+      - macdanet
+  timescaledb:
+    image: timescale/timescaledb-ha:pg14-latest
+    container_name: timescaledb
+    hostname: timescaledb
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: "passw0rd"
+    #ports:
+    #- 5432:5432
+    volumes:
+      - "/data/MACDA/timescaledb/data:/home/postgres/pgdata/data"
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 5432", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    hostname: pgadmin
+    restart: unless-stopped
+    depends_on:
+      - timescaledb
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@macda.com"
+      PGADMIN_DEFAULT_PASSWORD: "passw0rd"
+    #ports:
+    #- 8280:80
+    volumes:
+      - "/data/MACDA/pgadmin:/var/lib/pgadmin"
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 8280", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
+  desktop:
+    # latest, slim, full
+    image: harbor.zinohome.com/kasmweb/kasm-desktop-focal-web:1.12.1
+    container_name: desktop
+    hostname: desktop
+    restart: unless-stopped
+    shm_size: "1536m"
+    ports:
+      - 10000:6901
+    environment:
+      - LANG=zh_CN.UTF-8
+      - LANGUAGE=zh_CN.UTF-8
+      - LC_ALL=zh_CN.UTF-8
+      - GTK_IM_MODULE=ibus
+      - QT_IM_MODULE=ibus
+      - XMODIFIERS='@im=ibus'
+      - VNC_PW=passw0rd
+    volumes:
+      - /data/MACDA/desktop/UserHome:/home/kasm-user/
+      - /data/MACDA/desktop/UserData:/UserData
+    networks:
+      - macdanet
+networks:
+  macdanet:
+    driver: bridge

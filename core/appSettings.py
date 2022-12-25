@@ -19,6 +19,7 @@ class AppSettings(BaseSettings):
     APP_TITLE: str = 'MACDA'
     APP_VERSION: str = '1.0911'
     DEBUG: bool = Field(True, env='DEBUG')
+    DEV_MODE: bool = Field(True, env='DEV_MODE')
     SOURCE_TOPIC_NAME: str = Field('signal-in', env='SOURCE_TOPIC_NAME')
     PARSED_TOPIC_NAME: str = Field('signal-in', env='PARSED_TOPIC_NAME')
     KAFKA_BOOTSTRAP_SERVER: str = Field('kafka://localhost:9092', env='KAFKA_BOOTSTRAP_SERVER')

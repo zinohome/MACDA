@@ -19,6 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(AppSettings):
     DEBUG: bool = True
+    DEV_MODE: bool = True
     SOURCE_TOPIC_NAME: str = 'signal-in'
     PARSED_TOPIC_NAME: str = 'signal-parsed'
     KAFKA_BOOTSTRAP_SERVER: str = 'kafka://localhost:9092'
