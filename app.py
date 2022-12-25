@@ -23,4 +23,3 @@ app = faust.App(
 )
 app.web.blueprints.add('/stats/', 'faust.web.apps.stats:blueprint')
 app.discover('pipeline.parse')
-#app.discover('pipeline.fetcher','pipeline.normaliser')

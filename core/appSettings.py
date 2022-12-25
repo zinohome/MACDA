@@ -20,6 +20,7 @@ class AppSettings(BaseSettings):
     APP_VERSION: str = '1.0911'
     DEBUG: bool = Field(True, env='DEBUG')
     SOURCE_TOPIC_NAME: str = Field('signal-in', env='SOURCE_TOPIC_NAME')
+    PARSED_TOPIC_NAME: str = Field('signal-in', env='PARSED_TOPIC_NAME')
     KAFKA_BOOTSTRAP_SERVER: str = Field('kafka://localhost:9092', env='KAFKA_BOOTSTRAP_SERVER')
     SCHEMA_REGISTRY_URL: str = Field('http://localhost:8081', env='SCHEMA_REGISTRY_URL')
     STORE_URI: str = Field('memory://', env='STORE_URI')
@@ -40,8 +41,8 @@ class AppSettings(BaseSettings):
     #SSL_CONTEXT = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH, cafile=KAFKA_SSL_CABUNDLE)
     #SSL_CONTEXT.load_cert_chain(KAFKA_SSL_CERT, keyfile=KAFKA_SSL_KEY, password=SSL_KEY_PASSWORD)
     APP_EXCEPTIONN_DETAIL: bool = Field(True, env='APP_EXCEPTIONN_DETAIL')
-    APP_LOG_LEVEL: str = Field('', env='APP_LOG_LEVEL')
-    APP_LOG_FILENAME: str = Field('', env='APP_LOG_FILENAME')
+    APP_LOG_LEVEL: str = Field('INFO', env='APP_LOG_LEVEL')
+    APP_LOG_FILENAME: str = Field('macda.log', env='APP_LOG_FILENAME')
 
     @validator('KAFKA_BOOTSTRAP_SERVER', 'SCHEMA_REGISTRY_URL', pre = True)
     def valid_url(url: str):

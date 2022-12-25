@@ -20,6 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class Settings(AppSettings):
     DEBUG: bool = True
     SOURCE_TOPIC_NAME: str = 'signal-in'
+    PARSED_TOPIC_NAME: str = 'signal-parsed'
     KAFKA_BOOTSTRAP_SERVER: str = 'kafka://localhost:9092'
     SCHEMA_REGISTRY_URL: str = 'http://localhost:8081'
     STORE_URI: str = 'memory://'
@@ -41,7 +42,7 @@ class Settings(AppSettings):
     # SSL_CONTEXT.load_cert_chain(KAFKA_SSL_CERT, keyfile=KAFKA_SSL_KEY, password=SSL_KEY_PASSWORD)
     APP_EXCEPTIONN_DETAIL: bool = True
     APP_LOG_LEVEL: str = 'INFO'
-    APP_LOG_FILENAME: str = 'vacda.log'
+    APP_LOG_FILENAME: str = 'macda.log'
 
 settings = Settings(_env_file=os.path.join(BASE_DIR, '.env'))
 

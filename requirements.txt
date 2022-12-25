@@ -1,9 +1,9 @@
-faust-streaming>=0.8.9
+faust-streaming>=0.10.0
 python-schema-registry-client>=2.4.1
 pydantic[dotenv]>=0.21.0
 loguru>=0.6.0
-pytz>=2022.2.1
+pytz>=2022.7
 requests>=2.28.1
 kaitaistruct>=0.10
 simplejson>=3.17.6
-apache-iotdb>=0.13.2
+psycopg2>=2.9.5

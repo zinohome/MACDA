@@ -193,4 +193,4 @@ output_schema = faust.Schema(
     value_serializer="json",
 )
 
-output_topic = app.topic("signal-parsed", value_serializer='json')
+output_topic = app.topic(settings.PARSED_TOPIC_NAME, partitions=3, value_serializer='json')
