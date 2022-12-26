@@ -15,6 +15,7 @@ from codec.nb5 import Nb5
 from core.settings import settings
 from pipeline.fetcher.models import output_schema
 from pipeline.parse.models import input_topic, output_topic
+from rec_avro import to_rec_avro_destructive, from_rec_avro_destructive, rec_avro_schema
 from utils.log import log as log
 
 
@@ -27,6 +28,9 @@ async def parse_signal(stream):
         #log.debug(data)
         # Parse data and send to parsed topic
         parsed_dict = parse_data(data)
+        log.debug(parsed_dict)
+        parsed_dict_avro = to_rec_avro_destructive(parsed_dict)
+        log.debug(parsed_dict_avro)
         dev_mode = settings.DEV_MODE
         if dev_mode:
             key = f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_parse_time']}"

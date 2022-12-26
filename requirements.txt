@@ -8,3 +8,4 @@ kaitaistruct>=0.10
 simplejson>=3.17.6
 psycopg2>=2.9.5
 rec-avro>=0.0.4
+faust-avro-serializer>=1.1.0
