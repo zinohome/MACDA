@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 import json
 
+from faust import Schema
+from faust_avro_serializer import FaustAvroSerializer
+from schema_registry.client import SchemaRegistryClient
+
 #  #
 #  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
 #  #
@@ -15,7 +19,6 @@ from codec.nb5 import Nb5
 from core.settings import settings
 from pipeline.fetcher.models import output_schema
 from pipeline.parse.models import input_topic, output_topic
-from rec_avro import to_rec_avro_destructive, from_rec_avro_destructive, rec_avro_schema
 from utils.log import log as log
 
 
@@ -28,9 +31,6 @@ async def parse_signal(stream):
         #log.debug(data)
         # Parse data and send to parsed topic
         parsed_dict = parse_data(data)
-        log.debug(parsed_dict)
-        parsed_dict_avro = to_rec_avro_destructive(parsed_dict)
-        log.debug(parsed_dict_avro)
         dev_mode = settings.DEV_MODE
         if dev_mode:
             key = f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_parse_time']}"
@@ -39,8 +39,6 @@ async def parse_signal(stream):
         log.debug("Parsed data with key : %s" % f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_dvc_time']}")
         await output_topic.send(key=key, value=parsed_dict, schema=output_schema)
         # Send json to Archive topics
-        archivetopicname = f"signal-archive-{parsed_dict['msg_calc_dvc_no']}"
         archivetopicname = f"MACDA-archive-{settings.PARSED_TOPIC_NAME}-{parsed_dict['msg_calc_dvc_no']}"
         archivetopic = app.topic(archivetopicname, partitions=settings.TOPIC_PARTITIONS, value_serializer='json')
         await archivetopic.send(key=key,value=parsed_dict)
-        
