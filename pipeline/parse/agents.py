@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import json
-
-from faust import Schema
-from faust_avro_serializer import FaustAvroSerializer
-from schema_registry.client import SchemaRegistryClient
-
 #  #
 #  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
 #  #
