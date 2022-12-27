@@ -44,6 +44,8 @@ class AppSettings(BaseSettings):
     APP_EXCEPTIONN_DETAIL: bool = Field(True, env='APP_EXCEPTIONN_DETAIL')
     APP_LOG_LEVEL: str = Field('INFO', env='APP_LOG_LEVEL')
     APP_LOG_FILENAME: str = Field('macda.log', env='APP_LOG_FILENAME')
+    TSDB_URL: str = Field('postgres://postgres:passw0rd@timescaledb:5432/postgres', env='TSDB_URL')
+    TSDB_POOL_SIZE: int = Field(20, env='TSDB_POOL_SIZE')
 
     @validator('KAFKA_BOOTSTRAP_SERVER', 'SCHEMA_REGISTRY_URL', pre = True)
     def valid_url(url: str):

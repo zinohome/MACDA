@@ -44,6 +44,8 @@ class Settings(AppSettings):
     APP_EXCEPTIONN_DETAIL: bool = True
     APP_LOG_LEVEL: str = 'INFO'
     APP_LOG_FILENAME: str = 'macda.log'
+    TSDB_URL: str = 'postgres://postgres:passw0rd@timescaledb:5432/postgres'
+    TSDB_POOL_SIZE: int = 50
 
 settings = Settings(_env_file=os.path.join(BASE_DIR, '.env'))
 

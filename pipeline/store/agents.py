@@ -11,8 +11,19 @@
 from app import app
 from pipeline.store.models import input_topic
 from utils.log import log as log
+from utils.tsutil import TSutil
+
 
 @app.agent(input_topic)
 async def store_signal(stream):
+    tu = TSutil()
     async for data in stream:
-        log.debug(data)
+        #log.debug(data['payload'])
+        if 'payload' in data:
+            tu.insert('pro_macda',data['payload'])
+            tu.insert('dev_macda',data['payload'])
+            log.debug("Saved data with key : %s" % f"{data['payload']['msg_calc_dvc_no']}-{data['payload']['msg_calc_dvc_time']}")
+        else:
+            tu.insert('pro_macda', data)
+            tu.insert('dev_macda', data)
+            log.debug("Saved data with key : %s" % f"{data['msg_calc_dvc_no']}-{data['msg_calc_dvc_time']}")

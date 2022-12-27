@@ -14,7 +14,6 @@ from psycopg2 import pool
 from core.settings import settings
 from utils.log import log as log
 
-CONNECTION = "postgres://postgres:passw0rd@192.168.32.160:5432/postgres"
 
 class Cached(type):
     def __init__(self, *args, **kwargs):
@@ -30,8 +29,8 @@ class Cached(type):
             return obj
 class TSutil(metaclass=Cached):
     def __init__(self):
-        log.debug('Connect to timescaledb uri [ %s ]' % CONNECTION)
-        self.conn_pool = psycopg2.pool.SimpleConnectionPool(1, 20, CONNECTION)
+        log.debug('Connect to timescaledb uri [ %s ]' % settings.TSDB_URL)
+        self.conn_pool = psycopg2.pool.SimpleConnectionPool(1, settings.TSDB_POOL_SIZE, settings.TSDB_URL)
         if (self.conn_pool):
             log.debug("Connection pool created successfully")
         try:
@@ -49,9 +48,34 @@ class TSutil(metaclass=Cached):
             self.conn_pool.putconn(conn)
             log.debug("Check tsdb table ... Success !")
         except Exception as exp:
-            log.error('Exception at dbmeta.gen_schema() %s ' % exp)
+            log.error('Exception at dbmeta.__init__() %s ' % exp)
             traceback.print_exc()
 
+    def insert(self, tablename, jsonobj):
+        insertsql = f"INSERT INTO {tablename}"
+        keylst = []
+        valuelst = []
+        masklst = []
+        ignorekeys = ['msg_header_code01','msg_header_code02','msg_length','msg_src_dvc_no','msg_host_dvc_no','msg_type','msg_frame_no','msg_line_no','msg_train_type','msg_train_no','msg_carriage_no','msg_protocal_version','msg_crc']
+        for (key, value) in jsonobj.items():
+            if not key in ignorekeys:
+                keylst.append(key)
+                valuelst.append(str(value))
+                masklst.append('%s')
+        keystr = ','.join(keylst)
+        maskstr = ','.join(masklst)
+        insertsql = f"INSERT INTO {tablename} ({keystr}) VALUES ({maskstr})"
+        #log.debug(insertsql)
+        try:
+            conn = self.conn_pool.getconn()
+            cur = conn.cursor()
+            cur.execute(insertsql,valuelst)
+            conn.commit()
+            cur.close()
+            self.conn_pool.putconn(conn)
+        except Exception as exp:
+            log.error('Exception at dbmeta.insert() %s ' % exp)
+            traceback.print_exc()
     def __del__(self):
         if self.conn_pool:
             self.conn_pool.closeall
@@ -59,3 +83,5 @@ class TSutil(metaclass=Cached):
 
 if __name__ == '__main__':
     tu = TSutil()
+    jobj = {"schema":"s1","playload":"p1"}
+    tu.insert('dev_macda', jobj)
