@@ -265,6 +265,17 @@ services:
     #    retries: 5
     networks:
       - macdanet
+  macda:
+    image: jointhero/macda:nb-v1.0911
+    container_name: macda
+    hostname: macda
+    restart: unless-stopped
+    depends_on:
+      - mirror-maker
+    #ports:
+    #  - 6166:6166
+    networks:
+      - macdanet
   desktop:
     # latest, slim, full
     image: harbor.zinohome.com/kasmweb/kasm-desktop-focal-web:1.12.1
