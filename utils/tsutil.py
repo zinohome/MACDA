@@ -107,7 +107,7 @@ class TSutil(metaclass=Cached):
             mgr = CopyManager(conn, tablename, cols)
             mgr.copy(records)
             conn.commit()
-            log.debug("Batch Commited")
+            log.info("Batch Commited")
             cur.close()
             self.conn_pool.putconn(conn)
         except Exception as exp:
