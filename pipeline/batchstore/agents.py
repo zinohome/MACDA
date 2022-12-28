@@ -9,6 +9,7 @@
 #  @Software: MACDA
 
 from app import app
+from core.settings import settings
 from pipeline.batchstore.models import input_topic
 from utils.log import log as log
 from utils.tsutil import TSutil
@@ -17,7 +18,7 @@ from utils.tsutil import TSutil
 @app.agent(input_topic)
 async def store_signal(stream):
     tu = TSutil()
-    async for datas in stream.take(10000, within=10):
+    async for datas in stream.take(10000, within=settings.TSDB_BATCH_TIME):
         tu.batchinsert('pro_macda', 'msg_calc_dvc_time', datas)
         tu.batchinsert('dev_macda', 'msg_calc_parse_time', datas)
         log.debug("Saved data with batch length: %s" % len(datas))
