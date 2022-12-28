@@ -104,6 +104,21 @@ services:
     #    retries: 5
     networks:
       - macdanet
+  connect-starter:
+    image: phusion/passenger-full:latest
+    hostname: connect-starter
+    container_name: connect-starter
+    volumes:
+      - "/data/MACDA/scripts/createminioconn.sh:/tmp/createminioconn.sh"
+    depends_on:
+      - kafka-connect
+    entrypoint: >
+      /bin/sh -c "
+      /bin/bash /tmp/createminioconn.sh;
+      exit 0;
+      "
+    networks:
+      - macdanet
   kafka-ui:
     image: harbor.zinohome.com/macda/kafka-ui:latest
     hostname: kafka-ui
@@ -199,6 +214,8 @@ services:
       - macdanet
   createbuckets:
     image: harbor.zinohome.com/macda/mc:latest
+    container_name: createbuckets
+    hostname: createbuckets
     depends_on:
       - minio
     entrypoint: >
@@ -216,8 +233,8 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: "passw0rd"
-    #ports:
-    #- 5432:5432
+    ports:
+      - 5432:5432
     volumes:
       - "/data/MACDA/timescaledb/data:/home/postgres/pgdata/data"
     #healthcheck:
@@ -238,7 +255,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: "admin@macda.com"
       PGADMIN_DEFAULT_PASSWORD: "passw0rd"
     #ports:
-    #- 8280:80
+    #  - 8280:80
     volumes:
       - "/data/MACDA/pgadmin:/var/lib/pgadmin"
     #healthcheck:

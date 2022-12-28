@@ -22,4 +22,4 @@ app = faust.App(
     topic_disable_leader=settings.TOPIC_DISABLE_LEADER
 )
 app.web.blueprints.add('/stats/', 'faust.web.apps.stats:blueprint')
-app.discover('pipeline.parse','pipeline.store')
+app.discover('pipeline.parse','pipeline.batchstore')

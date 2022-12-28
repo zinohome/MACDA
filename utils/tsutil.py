@@ -10,6 +10,8 @@
 import traceback
 import weakref
 import psycopg2
+from datetime import datetime
+from pgcopy import CopyManager
 from psycopg2 import pool
 from core.settings import settings
 from utils.log import log as log
@@ -48,15 +50,16 @@ class TSutil(metaclass=Cached):
             self.conn_pool.putconn(conn)
             log.debug("Check tsdb table ... Success !")
         except Exception as exp:
-            log.error('Exception at dbmeta.__init__() %s ' % exp)
+            log.error('Exception at tsutil.__init__() %s ' % exp)
             traceback.print_exc()
 
     def insert(self, tablename, jsonobj):
-        insertsql = f"INSERT INTO {tablename}"
         keylst = []
         valuelst = []
         masklst = []
-        ignorekeys = ['msg_header_code01','msg_header_code02','msg_length','msg_src_dvc_no','msg_host_dvc_no','msg_type','msg_frame_no','msg_line_no','msg_train_type','msg_train_no','msg_carriage_no','msg_protocal_version','msg_crc']
+        ignorekeys = ['msg_header_code01', 'msg_header_code02', 'msg_length', 'msg_src_dvc_no', 'msg_host_dvc_no',
+                      'msg_type', 'msg_frame_no', 'msg_line_no', 'msg_train_type', 'msg_train_no', 'msg_carriage_no',
+                      'msg_protocal_version', 'msg_crc']
         for (key, value) in jsonobj.items():
             if not key in ignorekeys:
                 keylst.append(key)
@@ -65,21 +68,62 @@ class TSutil(metaclass=Cached):
         keystr = ','.join(keylst)
         maskstr = ','.join(masklst)
         insertsql = f"INSERT INTO {tablename} ({keystr}) VALUES ({maskstr})"
-        #log.debug(insertsql)
+        # log.debug(insertsql)
         try:
             conn = self.conn_pool.getconn()
             cur = conn.cursor()
-            cur.execute(insertsql,valuelst)
+            cur.execute(insertsql, valuelst)
             conn.commit()
             cur.close()
             self.conn_pool.putconn(conn)
         except Exception as exp:
-            log.error('Exception at dbmeta.insert() %s ' % exp)
+            log.error('Exception at tsutil.insert() %s ' % exp)
             traceback.print_exc()
+
+    def batchinsert(self, tablename, timefieldname, jsonobjlst):
+        ignorekeys = ['msg_header_code01', 'msg_header_code02', 'msg_length', 'msg_src_dvc_no', 'msg_host_dvc_no',
+                      'msg_type', 'msg_frame_no', 'msg_line_no', 'msg_train_type', 'msg_train_no', 'msg_carriage_no',
+                      'msg_protocal_version', 'msg_crc']
+        jsonobj = jsonobjlst[0]['payload']
+        cols = []
+        for (key, value) in jsonobj.items():
+            if not key in ignorekeys:
+                cols.append(key)
+        #log.debug(cols)
+        records = []
+        for jsonobj in jsonobjlst:
+            record = []
+            for (key, value) in jsonobj['payload'].items():
+                if not key in ignorekeys:
+                    if key == timefieldname:
+                        record.append(self.parse_time(value))
+                    else:
+                        record.append(value)
+            records.append(record)
+        #log.debug(records)
+        try:
+            conn = self.conn_pool.getconn()
+            cur = conn.cursor()
+            mgr = CopyManager(conn, tablename, cols)
+            mgr.copy(records)
+            conn.commit()
+            log.debug("Batch Commited")
+            cur.close()
+            self.conn_pool.putconn(conn)
+        except Exception as exp:
+            log.error('Exception at tsutil.batchinsert() %s ' % exp)
+            traceback.print_exc()
+
     def __del__(self):
         if self.conn_pool:
             self.conn_pool.closeall
         log.debug("PostgreSQL connection pool is closed")
+
+    def parse_time(self, txt):
+        date_s,time_s = txt.split(' ')
+        year_s, mon_s, day_s = date_s.split('-')
+        hour_s, minute_s, second_s = time_s.split(':')
+        return datetime(int(year_s), int(mon_s), int(day_s), int(hour_s), int(minute_s), int(second_s))
 
 if __name__ == '__main__':
     tu = TSutil()
