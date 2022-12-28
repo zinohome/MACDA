@@ -22,4 +22,5 @@ curl -sL rocksdb.tar.gz https://github.com/facebook/rocksdb/archive/refs/tags/v7
 tar fvxz rocksdb.tar.gz && \
 cd rocksdb-7.8.3 && \
 make shared_lib && \
-make install-shared
+make install-shared && \
+rm -r /tmp/*
