@@ -22,7 +22,7 @@ async def store_signal(stream):
         if 'payload' in data:
             tu.insert('pro_macda',data['payload'])
             tu.insert('dev_macda',data['payload'])
-            log.debug("Saved data with key : %s" % f"{data['payload']['msg_calc_dvc_no']}-{data['payload']['msg_calc_dvc_time']}")
+            log.info("Saved data with key : %s" % f"{data['payload']['msg_calc_dvc_no']}-{data['payload']['msg_calc_dvc_time']}")
         #else:
         #    tu.insert('pro_macda', data)
         #    tu.insert('dev_macda', data)
