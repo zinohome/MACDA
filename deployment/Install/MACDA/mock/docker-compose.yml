@@ -156,8 +156,8 @@ services:
       - LC_ALL=zh_CN.UTF-8
       - VNC_PW=passw0rd
     volumes:
-      - /data/MACDA/mockdesktop/UserHome:/home/kasm-user/
-      - /data/MACDA/mockdesktop/UserData:/UserData
+      - /data/MACDA/mock-data/desktop/UserHome:/home/kasm-user/
+      - /data/MACDA/mock-data/desktop/UserData:/UserData
     networks:
       - macdanet
 networks:
