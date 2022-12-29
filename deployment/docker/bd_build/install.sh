@@ -3,7 +3,7 @@ set -e
 set -x
 apt-get update && DEBIAN_FRONTEND=noninteractive && \
 apt -y dist-upgrade && \
-apt-get install -y --no-install-recommends build-essential libssl-dev libffi-dev python3-dev net-tools libsasl2-dev curl wget procps netcat git libnss3-tools python3-pip && \
+apt-get install -y --no-install-recommends build-essential libssl-dev libffi-dev python3-dev net-tools libsasl2-dev cmake libsnappy-dev zlib1g-dev libbz2-dev libgflags-dev liblz4-dev curl wget procps netcat git libnss3-tools python3-pip && \
 pip3 install virtualenv && \
 cd /opt && \
 git clone https://github.com/zinohome/MACDA.git && \
@@ -21,7 +21,8 @@ chmod 755 /etc/my_init.d/50_start_macda.sh && \
 cd /tmp && \
 curl -sL rocksdb.tar.gz https://github.com/facebook/rocksdb/archive/refs/tags/v7.8.3.tar.gz > rocksdb.tar.gz && \
 tar fvxz rocksdb.tar.gz && \
-cd rocksdb-7.8.3 && \
+mv rocksdb-7.8.3 rocksdb && \
+cd rocksdb && \
 make shared_lib && \
 make install-shared && \
 rm -r /tmp/*
