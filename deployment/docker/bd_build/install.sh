@@ -18,6 +18,7 @@ cp /bd_build/wait-for /usr/bin/wait-for && chmod 755 /usr/bin/wait-for && \
 ls -l /opt/MACDA/.env && cat /opt/MACDA/.env && \
 cp /opt/MACDA/deployment/docker/bd_build/50_start_h.sh /etc/my_init.d/50_start_macda.sh && \
 chmod 755 /etc/my_init.d/50_start_macda.sh && \
+cd /tmp && \
 curl -sL rocksdb.tar.gz https://github.com/facebook/rocksdb/archive/refs/tags/v7.8.3.tar.gz > rocksdb.tar.gz && \
 tar fvxz rocksdb.tar.gz && \
 cd rocksdb-7.8.3 && \
