@@ -1,0 +1,165 @@
+version: '3.7'
+services:
+  mock-redpanda:
+    # NOTE: Please use the latest version here!
+    image: harbor.zinohome.com/macda/redpanda:v22.3.9
+    container_name: mock-redpanda
+    hostname: mock-redpanda
+    restart: unless-stopped
+    command:
+    - redpanda start
+    - --smp 1
+    - --reserve-memory 0M
+    - --overprovisioned
+    - --node-id 0
+    - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+    - --advertise-kafka-addr PLAINTEXT://mock-redpanda:29092,OUTSIDE://192.168.32.160:39092
+    - --pandaproxy-addr PLAINTEXT://0.0.0.0:28082,OUTSIDE://0.0.0.0:8082
+    - --advertise-pandaproxy-addr PLAINTEXT://mock-redpanda:28082,OUTSIDE://mock-redpanda:8082
+    volumes:
+      - "/data/MACDA/mock-data/redpanda/data:/var/lib/redpanda/data"
+    ports:
+    # - 38081:8081
+    # - 38082:8082
+      - 39092:9092
+    # - 39644:9644
+    # - 48082:28082
+    # - 49092:29092
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 39092", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
+  mock-redpanda-console:
+    image: harbor.zinohome.com/macda/redpanda-console:v2.1.1
+    container_name: mock-redpanda-console
+    hostname: mock-redpanda-console
+    restart: on-failure
+    entrypoint: /bin/sh
+    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["mock-redpanda:29092"]
+          schemaRegistry:
+            enabled: true
+            urls: ["http://mock-redpanda:8081"]
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://mock-redpanda:9644"]
+        connect:
+          enabled: true
+          clusters:
+            - name: mock-kafka-connect
+              url: http://mock-kafka-connect:8083
+    #ports:
+    #  - 38080:8080
+    depends_on:
+      - mock-redpanda
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 38080", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
+  mock-kafka-connect:
+    image: harbor.zinohome.com/macda/kafka-connect:latest
+    hostname: mock-kafka-connect
+    container_name: mock-kafka-connect
+    restart: on-failure
+    depends_on:
+      - mock-redpanda
+    #ports:
+    #  - '38083:8083'
+    volumes:
+      - "/data/MACDA/mock-data/connect/data:/data"
+    environment:
+      CONNECT_REST_ADVERTISED_HOST_NAME: "mock-kafka-connect"
+      CONNECT_BOOTSTRAP_SERVERS: "mock-redpanda:29092"
+      CONNECT_GROUP_ID: "mock-kafka-connect-group"
+      CONNECT_CONFIG_STORAGE_TOPIC: "mock-kafka-connect_config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "mock-kafka-connect_offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "mock-kafka-connect_status"
+      # Cannot be higher than the number of brokers in the Kafka cluster
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.converters.ByteArrayConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.converters.ByteArrayConverter"
+      CONNECT_PLUGIN_PATH: "/app/libs"
+      # Logging
+      # Connect client overrides
+      CONNECT_TASK_SHUTDOWN_GRACEFUL_TIMEOUT_MS: 30000
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 900000
+      CONNECT_CONSUMER_MAX_POLL_RECORDS: 500
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 38083", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
+  mock-connect-starter:
+    image: phusion/passenger-full:latest
+    hostname: mock-connect-starter
+    container_name: mock-connect-starter
+    volumes:
+      - "/data/MACDA/mock-data/scripts/createmockconn.sh:/tmp/createmockconn.sh"
+    depends_on:
+      - mock-kafka-connect
+    entrypoint: >
+      /bin/sh -c "
+      /bin/bash /tmp/createmockconn.sh;
+      exit 0;
+      "
+    networks:
+      - macdanet
+  mock-kafka-ui:
+    image: harbor.zinohome.com/macda/kafka-ui:latest
+    hostname: mock-kafka-ui
+    container_name: mock-kafka-ui
+    restart: unless-stopped
+    depends_on:
+      - mock-redpanda
+    #ports:
+    #  - "8180:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: mock-redpanda
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 192.168.32.160:39092
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://mock-redpanda:8081"
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: "mock-kafka-connect"
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: "http://mock-kafka-connect:8083"
+    #healthcheck:
+    #    test: ["CMD", "netstat", "-anp", "|", "grep 8180", "||", "exit 1"]
+    #    interval: 30s
+    #    timeout: 5s
+    #    retries: 5
+    networks:
+      - macdanet
+  mock-desktop:
+    # latest, slim, full
+    image: harbor.zinohome.com/kasmweb/kasm-desktop-focal-web:1.12.1
+    container_name: mock-desktop
+    hostname: mock-desktop
+    restart: unless-stopped
+    shm_size: "1536m"
+    ports:
+      - 10001:6901
+    environment:
+      - LANG=zh_CN.UTF-8
+      - LANGUAGE=zh_CN.UTF-8
+      - LC_ALL=zh_CN.UTF-8
+      - VNC_PW=passw0rd
+    volumes:
+      - /data/MACDA/mockdesktop/UserHome:/home/kasm-user/
+      - /data/MACDA/mockdesktop/UserData:/UserData
+    networks:
+      - macdanet
+networks:
+  macdanet:
+    driver: bridge
