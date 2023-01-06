@@ -23,3 +23,4 @@ app = faust.App(
 )
 app.web.blueprints.add('/stats/', 'faust.web.apps.stats:blueprint')
 app.discover('pipeline.parse','pipeline.batchstore')
+#app.discover('pipeline.parse','pipeline.store')

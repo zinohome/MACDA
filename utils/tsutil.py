@@ -15,6 +15,7 @@ from pgcopy import CopyManager
 from psycopg2 import pool
 from core.settings import settings
 from utils.log import log as log
+import simplejson as json
 
 
 class Cached(type):
@@ -94,7 +95,7 @@ class TSutil(metaclass=Cached):
         valuelst.append(str(jsonobj['msg_calc_dvc_time']))
         valuelst.append(str(jsonobj['msg_calc_parse_time']))
         valuelst.append(str(jsonobj['msg_calc_dvc_no']))
-        valuelst.append(jsonobj)
+        valuelst.append(json.dumps(jsonobj))
         # log.debug(insertsql)
         try:
             conn = self.conn_pool.getconn()
@@ -126,6 +127,35 @@ class TSutil(metaclass=Cached):
                         record.append(self.parse_time(value))
                     else:
                         record.append(value)
+            records.append(record)
+        #log.debug(records)
+        try:
+            conn = self.conn_pool.getconn()
+            cur = conn.cursor()
+            mgr = CopyManager(conn, tablename, cols)
+            mgr.copy(records)
+            conn.commit()
+            log.info("Batch Commited")
+            cur.close()
+            self.conn_pool.putconn(conn)
+        except Exception as exp:
+            log.error('Exception at tsutil.batchinsert() %s ' % exp)
+            traceback.print_exc()
+
+    def batchinsertjson(self, tablename, timefieldname, jsonobjlst):
+        jsonobj = jsonobjlst[0]['payload']
+        cols = ['msg_calc_dvc_no', 'msg_calc_dvc_time', 'msg_calc_parse_time', 'indicators']
+        records = []
+        for jsonobj in jsonobjlst:
+            record = []
+            record.append(jsonobj['payload']['msg_calc_dvc_no'])
+            if timefieldname == 'msg_calc_dvc_time':
+                record.append(self.parse_time(jsonobj['payload']['msg_calc_dvc_time']))
+                record.append(jsonobj['payload']['msg_calc_parse_time'])
+            else:
+                record.append(jsonobj['payload']['msg_calc_dvc_time'])
+                record.append(self.parse_time(jsonobj['payload']['msg_calc_parse_time']))
+            record.append(json.dumps(jsonobj['payload']))
             records.append(record)
         #log.debug(records)
         try:

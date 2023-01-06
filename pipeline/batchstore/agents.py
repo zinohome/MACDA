@@ -21,6 +21,8 @@ async def store_signal(stream):
     async for datas in stream.take(10000, within=settings.TSDB_BATCH_TIME):
         tu.batchinsert('pro_macda', 'msg_calc_dvc_time', datas)
         tu.batchinsert('dev_macda', 'msg_calc_parse_time', datas)
+        tu.batchinsertjson('pro_macda_json', 'msg_calc_dvc_time', datas)
+        tu.batchinsertjson('dev_macda_json', 'msg_calc_parse_time', datas)
         log.info("Saved data with batch length: %s" % len(datas))
 
     '''
