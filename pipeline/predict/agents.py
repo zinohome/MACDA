@@ -48,6 +48,11 @@ async def store_signal(stream):
                 rat_sensor =1
             if ref_leak_u11 + ref_leak_u12 + ref_leak_u21 + ref_leak_u22 + ref_pump_u1 + ref_pump_u2 + fat_sensor + rat_sensor > 0:
                 # write to db
+                if dev_mode:
+                    key = f"{data['payload']['msg_calc_dvc_no']}-{data['payload']['msg_calc_parse_time']}"
+                else:
+                    key = f"{data['payload']['msg_calc_dvc_no']}-{data['payload']['msg_calc_dvc_time']}"
+                log.debug("Add predict data  with key : %s" % key)
                 predictjson = {}
                 predictjson['msg_calc_dvc_time'] = data['payload']['msg_calc_dvc_time']
                 predictjson['msg_calc_parse_time'] = data['payload']['msg_calc_parse_time']
