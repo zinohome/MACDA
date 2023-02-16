@@ -93,27 +93,6 @@ if __name__ == '__main__':
     #func = sp.__hotfuncdict__[-5]
     log.debug(sp.polyfit(6, 28, 30, 4.7))
 
-    '''
-    x = [10, 20, 30, 40, 50, 60, 70, 80]
-    x = np.array(x)
-    log.debug('x is :\n', x)
-    num = [174, 236, 305, 334, 349, 351, 342, 323]
-    y = np.array(num)
-    log.debug('y is :\n', y)
-    # f1 为各项的系数，3 表示想要拟合的最高次项是多少。
-    f1 = np.polyfit(x, y, 3)
-    # p1 为拟合的多项式表达式
-    p1 = np.poly1d(f1)
-    log.debug('p1 is :\n', p1)
-    log.debug(p1(15))
-    log.debug(DATA_DIR)
-    colddatafile = os.path.join(DATA_DIR, 'colddata.xlsx')
-    hotdatafile = os.path.join(DATA_DIR, 'hotdata.xlsx')
-    #df = pd.read_excel(colddatafile)
-    #log.debug(df)
-    df = pd.read_excel(hotdatafile, index_col='freq')
-    log.debug(df[-5])
-    '''
 
 
 

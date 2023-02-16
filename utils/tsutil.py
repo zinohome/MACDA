@@ -258,6 +258,64 @@ class TSutil(metaclass=Cached):
             log.error('Exception at tsutil.get_sensordata() %s ' % exp)
             traceback.print_exc()
 
+    def get_predictdata(self, mode, dvc_no):
+        querysql = ''
+        if mode == 'dev':
+            querysql = f"select msg_calc_dvc_no, avg(dvc_w_op_mode_u1) as dvc_w_op_mode_u1, avg(dvc_i_fat_u1) as dvc_i_fat_u1, avg(dvc_w_freq_u11) as dvc_w_freq_u11, " \
+                       f"avg(dvc_i_suck_pres_u11) as dvc_i_suck_pres_u11, avg(dvc_w_freq_u12) as dvc_w_freq_u12, avg(dvc_i_suck_pres_u12) as dvc_i_suck_pres_u12, " \
+                       f"avg(dvc_w_op_mode_u2) as dvc_w_op_mode_u2, avg(dvc_i_fat_u2) as dvc_i_fat_u2, avg(dvc_w_freq_u21) as dvc_w_freq_u21, avg(dvc_i_suck_pres_u21) as dvc_i_suck_pres_u21, " \
+                       f"avg(dvc_w_freq_u22) as dvc_w_freq_u22, avg(dvc_i_suck_pres_u22) as dvc_i_suck_pres_u22, avg(ABS(dvc_w_freq_u11 - dvc_w_freq_u12)) as w_frequ1_sub, avg(ABS(dvc_w_crnt_u11 - dvc_w_crnt_u12)) as w_crntu1_sub, " \
+                       f"avg(ABS(dvc_w_freq_u21 - dvc_w_freq_u22)) as w_frequ2_sub, avg(ABS(dvc_w_crnt_u21 - dvc_w_crnt_u22)) as w_crntu2_sub, avg(ABS(dvc_i_fat_u1 - dvc_i_fat_u2)) as fat_sub, avg(ABS(dvc_i_rat_u1 - dvc_i_rat_u2)) as rat_sub " \
+                       f"FROM public.dev_macda where msg_calc_parse_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '{dvc_no}' group by msg_calc_dvc_no"
+        else:
+            querysql = f"select msg_calc_dvc_no, avg(dvc_w_op_mode_u1) as dvc_w_op_mode_u1, avg(dvc_i_fat_u1) as dvc_i_fat_u1, avg(dvc_w_freq_u11) as dvc_w_freq_u11, " \
+                       f"avg(dvc_i_suck_pres_u11) as dvc_i_suck_pres_u11, avg(dvc_w_freq_u12) as dvc_w_freq_u12, avg(dvc_i_suck_pres_u12) as dvc_i_suck_pres_u12, " \
+                       f"avg(dvc_w_op_mode_u2) as dvc_w_op_mode_u2, avg(dvc_i_fat_u2) as dvc_i_fat_u2, avg(dvc_w_freq_u21) as dvc_w_freq_u21, avg(dvc_i_suck_pres_u21) as dvc_i_suck_pres_u21, " \
+                       f"avg(dvc_w_freq_u22) as dvc_w_freq_u22, avg(dvc_i_suck_pres_u22) as dvc_i_suck_pres_u22, avg(ABS(dvc_w_freq_u11 - dvc_w_freq_u12)) as w_frequ1_sub, avg(ABS(dvc_w_crnt_u11 - dvc_w_crnt_u12)) as w_crntu1_sub, " \
+                       f"avg(ABS(dvc_w_freq_u21 - dvc_w_freq_u22)) as w_frequ2_sub, avg(ABS(dvc_w_crnt_u21 - dvc_w_crnt_u22)) as w_crntu2_sub, avg(ABS(dvc_i_fat_u1 - dvc_i_fat_u2)) as fat_sub, avg(ABS(dvc_i_rat_u1 - dvc_i_rat_u2)) as rat_sub " \
+                       f"FROM public.pro_macda where msg_calc_dvc_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '{dvc_no}' group by msg_calc_dvc_no"
+        try:
+            returndata = {}
+            conn = self.conn_pool.getconn()
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cur.execute(querysql)
+            result = cur.fetchall()
+            rlen = len(result)
+            returndata['len'] = rlen
+            if rlen >= 1:
+                returndata['data'] = result[0]
+            else:
+                returndata['data'] = None
+            cur.close()
+            self.conn_pool.putconn(conn)
+            return returndata
+        except Exception as exp:
+            log.error('Exception at tsutil.get_predictdata() %s ' % exp)
+            traceback.print_exc()
+
+    def insert_predictdata(self, tablename, jsonobj):
+        keylst = []
+        valuelst = []
+        masklst = []
+        for (key, value) in jsonobj.items():
+            keylst.append(key)
+            valuelst.append(str(value))
+            masklst.append('%s')
+        keystr = ','.join(keylst)
+        maskstr = ','.join(masklst)
+        insertsql = f"INSERT INTO {tablename} ({keystr}) VALUES ({maskstr})"
+        # log.debug(insertsql)
+        try:
+            conn = self.conn_pool.getconn()
+            cur = conn.cursor()
+            cur.execute(insertsql, valuelst)
+            conn.commit()
+            cur.close()
+            self.conn_pool.putconn(conn)
+        except Exception as exp:
+            log.error('Exception at tsutil.insert_predictdata() %s ' % exp)
+            traceback.print_exc()
+
     def __del__(self):
         if self.conn_pool:
             self.conn_pool.closeall
@@ -273,14 +331,19 @@ if __name__ == '__main__':
     tu = TSutil()
     jobj = {"schema":"s1","playload":"p1"}
     #tu.insert('dev_macda', jobj)
+    '''
     result = tu.get_refdata('dev', '5-98-2')
     if result['len'] > 0:
         log.debug(result['data']['msg_calc_dvc_no'])
-        log.debug(result)
     result = tu.get_pumpdata('dev', '5-98-2')
     if result['len'] > 0:
         log.debug(result['data']['w_frequ1_sub'])
     result = tu.get_sensordata('dev', '5-98-2')
     if result['len'] > 0:
         log.debug(result['data']['rat_sub'])
+    '''
+    result = tu.get_predictdata('dev', '5-98-2')
+    if result['len'] > 0:
+        log.debug(result['data']['rat_sub'])
+        log.debug(result)
     #tu.get_refdata('pro', '5-98-1')
