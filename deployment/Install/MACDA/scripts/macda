@@ -1,0 +1,9 @@
+/tmp/macda.log {
+	weekly	
+	rotate 8
+	compress
+	delaycompress
+	missingok
+	notifempty
+	create 644 root root
+}
