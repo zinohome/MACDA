@@ -1,0 +1,54 @@
+冷媒预警
+DEV:
+select msg_calc_dvc_no, avg(dvc_w_op_mode_u1) as dvc_w_op_mode_u1, avg(dvc_i_fat_u1) as dvc_i_fat_u1, avg(dvc_w_freq_u11) as dvc_w_freq_u11, avg(dvc_i_suck_pres_u11) as dvc_i_suck_pres_u11, avg(dvc_w_freq_u12) as dvc_w_freq_u12, avg(dvc_i_suck_pres_u12) as dvc_i_suck_pres_u12, avg(dvc_w_op_mode_u2) as dvc_w_op_mode_u2, avg(dvc_i_fat_u2) as dvc_i_fat_u2, avg(dvc_w_freq_u21), avg(dvc_i_suck_pres_u21) as dvc_i_suck_pres_u21, avg(dvc_w_freq_u22) as dvc_w_freq_u22, avg(dvc_i_suck_pres_u22) as dvc_i_suck_pres_u22 FROM public.dev_macda
+where msg_calc_parse_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-98-2'
+group by msg_calc_dvc_no
+
+PRO:
+select msg_calc_dvc_no, avg(dvc_w_op_mode_u1) as dvc_w_op_mode_u1, avg(dvc_i_fat_u1) as dvc_i_fat_u1, avg(dvc_w_freq_u11) as dvc_w_freq_u11, avg(dvc_i_suck_pres_u11) as dvc_i_suck_pres_u11, avg(dvc_w_freq_u12) as dvc_w_freq_u12, avg(dvc_i_suck_pres_u12) as dvc_i_suck_pres_u12, avg(dvc_w_op_mode_u2) as dvc_w_op_mode_u2, avg(dvc_i_fat_u2) as dvc_i_fat_u2, avg(dvc_w_freq_u21), avg(dvc_i_suck_pres_u21) as dvc_i_suck_pres_u21, avg(dvc_w_freq_u22) as dvc_w_freq_u22, avg(dvc_i_suck_pres_u22) as dvc_i_suck_pres_u22 FROM public.pro_macda
+where msg_calc_dvc_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-98-2'
+group by msg_calc_dvc_no
+
+判断：
+sp = SensorPolyfit()
+preu11 = sp.polyfit(dvc_w_op_mode_u1, dvc_i_fat_u1, dvc_w_freq_u11, dvc_i_suck_pres_u11)
+preu12 = sp.polyfit(dvc_w_op_mode_u1, dvc_i_fat_u1, dvc_w_freq_u12, dvc_i_suck_pres_u12)
+preu21 = sp.polyfit(dvc_w_op_mode_u2, dvc_i_fat_u2, dvc_w_freq_u21, dvc_i_suck_pres_u21)
+preu22 = sp.polyfit(dvc_w_op_mode_u2, dvc_i_fat_u2, dvc_w_freq_u22, dvc_i_suck_pres_u22)
+
+制冷（热泵）系统预警
+DEV:
+select msg_calc_dvc_no, avg(ABS(dvc_w_freq_u11 - dvc_w_freq_u12)) as w_frequ1_sub, avg(ABS(dvc_w_crnt_u11 - dvc_w_crnt_u12)) as w_crntu1_sub, avg(ABS(dvc_w_freq_u21 - dvc_w_freq_u22)) as w_frequ2_sub, avg(ABS(dvc_w_crnt_u21 - dvc_w_crnt_u22)) as w_crntu2_sub FROM public.dev_macda
+where msg_calc_parse_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-99-2'
+group by msg_calc_dvc_no
+
+PRO:
+select msg_calc_dvc_no, avg(ABS(dvc_w_freq_u11 - dvc_w_freq_u12)) as w_frequ1_sub, avg(ABS(dvc_w_crnt_u11 - dvc_w_crnt_u12)) as w_crntu1_sub, avg(ABS(dvc_w_freq_u21 - dvc_w_freq_u22)) as w_frequ2_sub, avg(ABS(dvc_w_crnt_u21 - dvc_w_crnt_u22)) as w_crntu2_sub FROM public.pro_macda
+where msg_calc_dvc_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-99-2'
+group by msg_calc_dvc_no
+
+判断：
+w_frequ1_sub = 0 and w_crntu1_sub > 2 : 机组1制冷（热泵）系统预警
+w_frequ2_sub = 0 and w_crntu2_sub > 2 : 机组2制冷（热泵）系统预警
+w_frequ1_sub = 0 and w_crntu1_sub < 1 : 机组1制冷（热泵）系统预警取消
+w_frequ2_sub = 0 and w_crntu2_sub < 1 : 机组2制冷（热泵）系统预警取消
+
+温度传感器预警：
+DEV：
+select msg_calc_dvc_no, avg(ABS(dvc_i_fat_u1 - dvc_i_fat_u2)) as fat_sub, avg(ABS(dvc_i_rat_u1 - dvc_i_rat_u2)) as rat_sub FROM public.dev_macda
+where msg_calc_parse_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-98-1'
+group by msg_calc_dvc_no
+PRO：
+select msg_calc_dvc_no, avg(ABS(dvc_i_fat_u1 - dvc_i_fat_u2)) as fat_sub, avg(ABS(dvc_i_rat_u1 - dvc_i_rat_u2)) as rat_sub FROM public.pro_macda
+where msg_calc_dvc_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-98-1'
+group by msg_calc_dvc_no
+
+判断：
+fat_sub > 4 : 新风温度传感器预警
+rat_sub > 4 : 回风温度传感器预警
+fat_sub < 2 : 新风温度传感器预警取消
+rat_sub < 2 : 回风温度传感器预警取消
+
+
+
+
