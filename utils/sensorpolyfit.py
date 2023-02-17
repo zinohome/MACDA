@@ -52,7 +52,6 @@ class SensorPolyfit(metaclass=Cached):
         log.debug('SensorPolyfit Generated.')
 
 
-
     def polyfit(self, mode, temp, freq, pres):
         if mode == 6 or mode == 7:
             if freq >= 30 and freq <=70:

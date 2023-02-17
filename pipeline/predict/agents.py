@@ -57,6 +57,7 @@ async def store_signal(stream):
                 predictjson['msg_calc_dvc_time'] = data['payload']['msg_calc_dvc_time']
                 predictjson['msg_calc_parse_time'] = data['payload']['msg_calc_parse_time']
                 predictjson['msg_calc_dvc_no'] = data['payload']['msg_calc_dvc_no']
+                predictjson['msg_calc_train_no'] = data['payload']['msg_calc_train_no']
                 predictjson['ref_leak_u11'] = ref_leak_u11
                 predictjson['ref_leak_u12'] = ref_leak_u12
                 predictjson['ref_leak_u21'] = ref_leak_u21

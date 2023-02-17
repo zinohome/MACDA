@@ -215,6 +215,8 @@ class Nb5(KaitaiStruct):
         nb5dict[
             'msg_calc_dvc_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}-{nb5dict['msg_carriage_no']}"
         nb5dict[
+            'msg_calc_train_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}"
+        nb5dict[
             'msg_calc_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
         nb5dict['msg_calc_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         for key in ('_io', '_parent', '_root',
@@ -246,6 +248,8 @@ class Nb5(KaitaiStruct):
         nb5dict = Nb5.from_bytes(bytesobj).__dict__.copy()
         nb5dict[
             'msg_calc_dvc_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}-{nb5dict['msg_carriage_no']}"
+        nb5dict[
+            'msg_calc_train_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}"
         nb5dict[
             'msg_calc_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
         nb5dict['msg_calc_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
