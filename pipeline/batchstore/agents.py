@@ -19,7 +19,7 @@ from utils.tsutil import TSutil
 async def store_signal(stream):
     tu = TSutil()
     async for datas in stream.take(10000, within=settings.TSDB_BATCH_TIME):
-        log.debug("=============== start get data ================")
+        log.debug("=============== Get batched data ================")
         dev_mode = settings.DEV_MODE
         if dev_mode:
             tu.batchinsert('dev_macda', 'msg_calc_parse_time', datas)
