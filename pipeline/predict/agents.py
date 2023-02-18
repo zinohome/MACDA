@@ -21,6 +21,7 @@ async def store_signal(stream):
     tu = TSutil()
     sp = SensorPolyfit()
     async for data in stream:
+        log.debug(data['payload'])
         dev_mode = settings.DEV_MODE
         mode = 'dev'
         if not dev_mode:
