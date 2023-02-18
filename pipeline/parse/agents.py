@@ -18,7 +18,7 @@ from utils.log import log as log
 @app.agent(input_topic)
 async def parse_signal(stream):
     async for data in stream:
-        log.debug("--------============= Get predict data =============--------")
+        log.debug("-------------------- Get binary data --------------------")
         # Parse data and send to parsed topic
         parsed_dict = Nb5.from_bytes_to_dict(data)
         out_record = {"schema":json_schema,"payload":parsed_dict}
