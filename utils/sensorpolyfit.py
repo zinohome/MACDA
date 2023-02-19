@@ -32,6 +32,7 @@ class Cached(type):
             return obj
 class SensorPolyfit(metaclass=Cached):
     def __init__(self):
+        log.debug('SensorPolyfit loading.')
         colddatafile = os.path.join(DATA_DIR, 'colddata.xlsx')
         hotdatafile = os.path.join(DATA_DIR, 'hotdata.xlsx')
         self.__colddf__ = pd.read_excel(colddatafile, index_col='freq')
