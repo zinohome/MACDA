@@ -48,7 +48,7 @@ class Alertutil(metaclass=Cached):
 
     @property
     def predictfield(self):
-        return ['ref_leak_u11','ref_leak_u12','ref_leak_u21','ref_leak_u22','ref_pump_u1','ref_pump_u2','fat_sensor','rat_sensor']
+        return ['ref_leak_u11','ref_leak_u12','ref_leak_u21','ref_leak_u22','ref_pump_u1','ref_pump_u2','fat_sensor','rat_sensor','cabin_overtemp']
 
     @property
     def alertfield(self):
