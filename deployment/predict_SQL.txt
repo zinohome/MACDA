@@ -28,26 +28,22 @@ where msg_calc_dvc_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-
 group by msg_calc_dvc_no
 
 判断：
-w_frequ1_sub = 0 and w_crntu1_sub > 2 : 机组1制冷（热泵）系统预警
-w_frequ2_sub = 0 and w_crntu2_sub > 2 : 机组2制冷（热泵）系统预警
-w_frequ1_sub = 0 and w_crntu1_sub < 1 : 机组1制冷（热泵）系统预警取消
-w_frequ2_sub = 0 and w_crntu2_sub < 1 : 机组2制冷（热泵）系统预警取消
+w_frequ1_sub < 1 and w_crntu1_sub > 2 : 机组1制冷（热泵）系统预警
+w_frequ2_sub < 1 and w_crntu2_sub > 2 : 机组2制冷（热泵）系统预警
 
 温度传感器预警：
 DEV：
-select msg_calc_dvc_no, avg(ABS(dvc_i_fat_u1 - dvc_i_fat_u2)) as fat_sub, avg(ABS(dvc_i_rat_u1 - dvc_i_rat_u2)) as rat_sub FROM public.dev_macda
+select msg_calc_dvc_no, approx_percentile(0.95, percentile_agg(dvc_bflt_trainmove)) as dvc_bflt_trainmove, avg(ABS(dvc_i_fat_u1 - dvc_i_fat_u2)) as fat_sub, avg(ABS(dvc_i_rat_u1 - dvc_i_rat_u2)) as rat_sub FROM public.dev_macda
 where msg_calc_parse_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-98-1'
 group by msg_calc_dvc_no
 PRO：
-select msg_calc_dvc_no, avg(ABS(dvc_i_fat_u1 - dvc_i_fat_u2)) as fat_sub, avg(ABS(dvc_i_rat_u1 - dvc_i_rat_u2)) as rat_sub FROM public.pro_macda
+select msg_calc_dvc_no, approx_percentile(0.95, percentile_agg(dvc_bflt_trainmove)) as dvc_bflt_trainmove, avg(ABS(dvc_i_fat_u1 - dvc_i_fat_u2)) as fat_sub, avg(ABS(dvc_i_rat_u1 - dvc_i_rat_u2)) as rat_sub FROM public.pro_macda
 where msg_calc_dvc_time > now() - INTERVAL '2 minutes' and msg_calc_dvc_no = '5-98-1'
 group by msg_calc_dvc_no
 
 判断：
-fat_sub > 4 : 新风温度传感器预警
-rat_sub > 4 : 回风温度传感器预警
-fat_sub < 2 : 新风温度传感器预警取消
-rat_sub < 2 : 回风温度传感器预警取消
+fat_sub > 8 : 新风温度传感器预警
+rat_sub > 8 : 回风温度传感器预警
 
 
 

@@ -7,7 +7,7 @@ from utils.log import log as log
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
-
+'''
 div10list = ['dvc_i_inner_temp','dvc_i_outer_temp','dvc_i_set_temp','dvc_i_seat_temp','dvc_i_veh_temp',
     'dvc_i_fat_u1','dvc_i_rat_u1','dvc_i_sat_u11','dvc_i_sat_u12','dvc_i_dft_u11','dvc_i_dft_u12',
     'dvc_w_crnt_u11','dvc_w_vol_u11','dvc_w_crnt_u12','dvc_w_vol_u12','dvc_i_suck_temp_u11','dvc_i_suck_pres_u11',
@@ -16,6 +16,16 @@ div10list = ['dvc_i_inner_temp','dvc_i_outer_temp','dvc_i_set_temp','dvc_i_seat_
     'dvc_i_dft_u21','dvc_i_dft_u22','dvc_w_crnt_u21','dvc_w_vol_u21','dvc_w_crnt_u22','dvc_w_vol_u22',
     'dvc_i_suck_temp_u21','dvc_i_suck_pres_u21','dvc_i_sup_heat_u21','dvc_i_eev_pos_u21','dvc_i_suck_temp_u22',
     'dvc_i_suck_pres_u22','dvc_i_sup_heat_u22','dvc_i_eev_pos_u22','dvc_w_pos_fad_u2']
+div100list = ['dvc_w_freq_u11','dvc_w_freq_u12','dvc_w_freq_u21','dvc_w_freq_u22']
+'''
+div10list = ['dvc_i_inner_temp','dvc_i_outer_temp','dvc_i_set_temp','dvc_i_seat_temp','dvc_i_veh_temp',
+    'dvc_i_fat_u1','dvc_i_rat_u1','dvc_i_sat_u11','dvc_i_sat_u12','dvc_i_dft_u11','dvc_i_dft_u12',
+    'dvc_w_crnt_u11','dvc_w_vol_u11','dvc_w_crnt_u12','dvc_w_vol_u12','dvc_i_suck_temp_u11','dvc_i_suck_pres_u11',
+    'dvc_i_sup_heat_u11','dvc_i_eev_pos_u11','dvc_i_suck_temp_u12','dvc_i_suck_pres_u12','dvc_i_sup_heat_u12',
+    'dvc_i_eev_pos_u12','dvc_i_fat_u2','dvc_i_rat_u2','dvc_i_sat_u21','dvc_i_sat_u22',
+    'dvc_i_dft_u21','dvc_i_dft_u22','dvc_w_crnt_u21','dvc_w_vol_u21','dvc_w_crnt_u22','dvc_w_vol_u22',
+    'dvc_i_suck_temp_u21','dvc_i_suck_pres_u21','dvc_i_sup_heat_u21','dvc_i_eev_pos_u21','dvc_i_suck_temp_u22',
+    'dvc_i_suck_pres_u22','dvc_i_sup_heat_u22','dvc_i_eev_pos_u22']
 div100list = ['dvc_w_freq_u11','dvc_w_freq_u12','dvc_w_freq_u21','dvc_w_freq_u22']
 
 class Nb5(KaitaiStruct):
@@ -165,27 +175,14 @@ class Nb5(KaitaiStruct):
         self.dvc_bcomuflt_eev_u22 = self._io.read_bits_int_be(1) != 0
         self.dvc_bmcbflt_pwr_u1 = self._io.read_bits_int_be(1) != 0
         self.dvc_bmcbflt_pwr_u2 = self._io.read_bits_int_be(1) != 0
-        self.dvc_blplockflt_u11 = self._io.read_bits_int_be(1) != 0
-        self.dvc_blplockflt_u12 = self._io.read_bits_int_be(1) != 0
-        self.dvc_blplockflt_u21 = self._io.read_bits_int_be(1) != 0
-        self.dvc_blplockflt_u22 = self._io.read_bits_int_be(1) != 0
-        self.dvc_bsclockflt_u11 = self._io.read_bits_int_be(1) != 0
-        self.dvc_bsclockflt_u12 = self._io.read_bits_int_be(1) != 0
-        self.dvc_bsclockflt_u21 = self._io.read_bits_int_be(1) != 0
-        self.dvc_bsclockflt_u22 = self._io.read_bits_int_be(1) != 0
-        self.dvc_bvfdlockflt_u11 = self._io.read_bits_int_be(1) != 0
-        self.dvc_bvfdlockflt_u12 = self._io.read_bits_int_be(1) != 0
-        self.dvc_bvfdlockflt_u21 = self._io.read_bits_int_be(1) != 0
-        self.dvc_bvfdlockflt_u22 = self._io.read_bits_int_be(1) != 0
-        self.dvc_beevlockflt_u11 = self._io.read_bits_int_be(1) != 0
-        self.dvc_beevlockflt_u12 = self._io.read_bits_int_be(1) != 0
-        self.dvc_beevlockflt_u21 = self._io.read_bits_int_be(1) != 0
-        self.dvc_beevlockflt_u22 = self._io.read_bits_int_be(1) != 0
-        self.dvc_cfbk_revers1 = self._io.read_bits_int_be(6)
+        self.dvc_cfbk_revers1 = self._io.read_bits_int_be(20)
+        self.dvc_bflt_trainmove = self._io.read_bits_int_be(1) != 0
+        self.dvc_bflt_cabinovertemp = self._io.read_bits_int_be(1) != 0
         self._io.align_to_byte()
         self.dvc_cft_code_u1 = self._io.read_u1()
         self.dvc_cft_code_u2 = self._io.read_u1()
-        self.dvc_cfbk_revers2 = self._io.read_u2be()
+        self.dvc_wposrad_u1 = self._io.read_u1()
+        self.dvc_wposrad_u2 = self._io.read_u1()
         self.dvc_dwoptime_emergivt = self._io.read_u4be()
         self.dvc_dwopcount_emergivt = self._io.read_u4be()
         self.dvc_dwoptime_ef_u1 = self._io.read_u4be()

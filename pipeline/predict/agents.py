@@ -36,18 +36,21 @@ async def store_signal(stream):
             # ref pump predict
             ref_pump_u1 = 0
             ref_pump_u2 = 0
-            if predictdata['data']['w_frequ1_sub'] == 0 and predictdata['data']['w_crntu1_sub'] > 2:
+            if predictdata['data']['w_frequ1_sub'] < 1 and predictdata['data']['w_crntu1_sub'] > 2:
                 ref_pump_u1 = 1
-            if predictdata['data']['w_frequ2_sub'] == 0 and predictdata['data']['w_crntu2_sub'] > 2:
+            if predictdata['data']['w_frequ2_sub'] < 1 and predictdata['data']['w_crntu2_sub'] > 2:
                 ref_pump_u2 = 1
             # sensor predict
             fat_sensor = 0
             rat_sensor = 0
-            if predictdata['data']['fat_sub'] > 4:
+            if predictdata['data']['dvc_bflt_trainmove'] > 0.8 and predictdata['data']['fat_sub'] > 8:
                 fat_sensor =1
-            if predictdata['data']['rat_sub'] > 4:
+            if predictdata['data']['dvc_bflt_trainmove'] > 0.8 and predictdata['data']['rat_sub'] > 8:
                 rat_sensor =1
-            if ref_leak_u11 + ref_leak_u12 + ref_leak_u21 + ref_leak_u22 + ref_pump_u1 + ref_pump_u2 + fat_sensor + rat_sensor > 0:
+            cabin_overtemp = 0
+            if predictdata['data']['dvc_bflt_cabinovertemp'] > 0.8:
+                cabin_overtemp = 1
+            if ref_leak_u11 + ref_leak_u12 + ref_leak_u21 + ref_leak_u22 + ref_pump_u1 + ref_pump_u2 + fat_sensor + rat_sensor + cabin_overtemp > 0:
                 # write to db
                 if dev_mode:
                     key = f"{data['payload']['msg_calc_dvc_no']}-{data['payload']['msg_calc_parse_time']}"
@@ -67,6 +70,7 @@ async def store_signal(stream):
                 predictjson['ref_pump_u2'] = ref_pump_u2
                 predictjson['fat_sensor'] = fat_sensor
                 predictjson['rat_sensor'] = rat_sensor
+                predictjson['cabin_overtemp'] = cabin_overtemp
                 if dev_mode:
                     tu.insert_predictdata('dev_predict', predictjson)
                 else:

@@ -280,46 +280,20 @@ seq:
     type: b1
   - id: dvc_bmcbflt_pwr_u2
     type: b1
-  - id: dvc_blplockflt_u11
-    type: b1
-  - id: dvc_blplockflt_u12
-    type: b1
-  - id: dvc_blplockflt_u21
-    type: b1
-  - id: dvc_blplockflt_u22
-    type: b1
-  - id: dvc_bsclockflt_u11
-    type: b1
-  - id: dvc_bsclockflt_u12
-    type: b1
-  - id: dvc_bsclockflt_u21
-    type: b1
-  - id: dvc_bsclockflt_u22
-    type: b1
-  - id: dvc_bvfdlockflt_u11
-    type: b1
-  - id: dvc_bvfdlockflt_u12
-    type: b1
-  - id: dvc_bvfdlockflt_u21
-    type: b1
-  - id: dvc_bvfdlockflt_u22
-    type: b1
-  - id: dvc_beevlockflt_u11
-    type: b1
-  - id: dvc_beevlockflt_u12
-    type: b1
-  - id: dvc_beevlockflt_u21
-    type: b1
-  - id: dvc_beevlockflt_u22
-    type: b1
   - id: dvc_cfbk_revers1
-    type: b6
+    type: b20
+  - id: dvc_bflt_trainmove
+    type: b1
+  - id: dvc_bflt_cabinovertemp
+    type: b1
   - id: dvc_cft_code_u1
     type: u1
   - id: dvc_cft_code_u2
     type: u1
-  - id: dvc_cfbk_revers2
-    type: u2
+  - id: dvc_wposrad_u1
+    type: u1
+  - id: dvc_wposrad_u2
+    type: u1
   - id: dvc_dwoptime_emergivt
     type: u4
   - id: dvc_dwopcount_emergivt

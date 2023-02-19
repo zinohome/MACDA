@@ -59,10 +59,8 @@ class SensorPolyfit(metaclass=Cached):
                 if temp >=20 and temp <=45:
                     func = sp.__coldfuncdict__[round(temp)]
                     calc_pres = round(func(freq), 1)
-                    if pres < round(0.8*calc_pres,1):
+                    if pres < round(0.7*calc_pres,1):
                         return 1
-                    elif pres < round(1.1*calc_pres,1) and pres > round(0.9*calc_pres,1):
-                        return 0
                     else:
                         return 0
                 else:
@@ -74,10 +72,8 @@ class SensorPolyfit(metaclass=Cached):
                 if temp >= -5 and temp <= 15:
                     func = sp.__hotfuncdict__[round(temp)]
                     calc_pres = round(func(freq), 1)
-                    if pres < round(0.8 * calc_pres, 1):
+                    if pres < round(0.7 * calc_pres, 1):
                         return 1
-                    elif pres < round(1.1 * calc_pres, 1) and pres > round(0.9 * calc_pres, 1):
-                        return 0
                     else:
                         return 0
                 else:
