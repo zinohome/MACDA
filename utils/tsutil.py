@@ -191,6 +191,81 @@ class TSutil(metaclass=Cached):
             log.error('Exception at tsutil.batchinsertjson() %s ' % exp)
             traceback.print_exc()
 
+    def get_predict_data(self, mode):
+        querysql = ''
+        if mode == 'dev':
+            querysql = f"SELECT msg_calc_dvc_no, max(ref_leak_u11) as ref_leak_u11, max(ref_leak_u12) as ref_leak_u12, max(ref_leak_u21) as ref_leak_u21, max(ref_leak_u22) as ref_leak_u22, max(ref_pump_u1) as ref_pump_u1, max(ref_pump_u2) as ref_pump_u2, max(fat_sensor) as fat_sensor, max(rat_sensor) as rat_sensor, max(cabin_overtemp) as cabin_overtemp FROM dev_predict WHERE msg_calc_parse_time > now() - INTERVAL '5 minutes' group by msg_calc_dvc_no"
+        else:
+            querysql = f"SELECT msg_calc_dvc_no, max(ref_leak_u11) as ref_leak_u11, max(ref_leak_u12) as ref_leak_u12, max(ref_leak_u21) as ref_leak_u21, max(ref_leak_u22) as ref_leak_u22, max(ref_pump_u1) as ref_pump_u1, max(ref_pump_u2) as ref_pump_u2, max(fat_sensor) as fat_sensor, max(rat_sensor) as rat_sensor, max(cabin_overtemp) as cabin_overtemp FROM pro_predict WHERE msg_calc_dvc_time > now() - INTERVAL '5 minutes' group by msg_calc_dvc_no"
+        try:
+            returndata = {}
+            conn = self.conn_pool.getconn()
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cur.execute(querysql)
+            result = cur.fetchall()
+            rlen = len(result)
+            returndata['len'] = rlen
+            if rlen >= 1:
+                returndata['data'] = result
+            else:
+                returndata['data'] = None
+            cur.close()
+            self.conn_pool.putconn(conn)
+            return returndata
+        except Exception as exp:
+            log.error('Exception at tsutil.get_predict_data() %s ' % exp)
+            traceback.print_exc()
+
+    def get_fault_data(self, mode):
+        querysql = ''
+        if mode == 'dev':
+            querysql = f"SELECT msg_calc_dvc_no, max(dvc_bocflt_ef_u11) as dvc_bocflt_ef_u11, max(dvc_bocflt_ef_u12) as dvc_bocflt_ef_u12, max(dvc_bocflt_cf_u11) as dvc_bocflt_cf_u11, max(dvc_bocflt_cf_u12) as dvc_bocflt_cf_u12, max(dvc_bflt_vfd_u11) as dvc_bflt_vfd_u11, max(dvc_blpflt_comp_u11) as dvc_blpflt_comp_u11, max(dvc_bscflt_comp_u11) as dvc_bscflt_comp_u11, max(dvc_bflt_vfd_u12) as dvc_bflt_vfd_u12, max(dvc_blpflt_comp_u12) as dvc_blpflt_comp_u12, max(dvc_bscflt_comp_u12) as dvc_bscflt_comp_u12, max(dvc_bflt_eev_u11) as dvc_bflt_eev_u11, max(dvc_bflt_eev_u12) as dvc_bflt_eev_u12, max(dvc_bflt_fad_u1) as dvc_bflt_fad_u1, max(dvc_bflt_rad_u1) as dvc_bflt_rad_u1, max(dvc_bflt_airclean_u1) as dvc_bflt_airclean_u1, max(dvc_bflt_expboard_u1) as dvc_bflt_expboard_u1, max(dvc_bflt_frstemp_u1) as dvc_bflt_frstemp_u1, max(dvc_bflt_splytemp_u11) as dvc_bflt_splytemp_u11, max(dvc_bflt_splytemp_u12) as dvc_bflt_splytemp_u12, max(dvc_bflt_rnttemp_u1) as dvc_bflt_rnttemp_u1, max(dvc_bflt_dfstemp_u11) as dvc_bflt_dfstemp_u11, max(dvc_bflt_dfstemp_u12) as dvc_bflt_dfstemp_u12, max(dvc_bocflt_ef_u21) as dvc_bocflt_ef_u21, max(dvc_bocflt_ef_u22) as dvc_bocflt_ef_u22, max(dvc_bocflt_cf_u21) as dvc_bocflt_cf_u21, max(dvc_bocflt_cf_u22) as dvc_bocflt_cf_u22, max(dvc_bflt_vfd_u21) as dvc_bflt_vfd_u21, max(dvc_blpflt_comp_u21) as dvc_blpflt_comp_u21, max(dvc_bscflt_comp_u21) as dvc_bscflt_comp_u21, max(dvc_bflt_vfd_u22) as dvc_bflt_vfd_u22, max(dvc_blpflt_comp_u22) as dvc_blpflt_comp_u22, max(dvc_bscflt_comp_u22) as dvc_bscflt_comp_u22, max(dvc_bflt_eev_u21) as dvc_bflt_eev_u21, max(dvc_bflt_eev_u22) as dvc_bflt_eev_u22, max(dvc_bflt_fad_u2) as dvc_bflt_fad_u2, max(dvc_bflt_rad_u2) as dvc_bflt_rad_u2, max(dvc_bflt_airclean_u2) as dvc_bflt_airclean_u2, max(dvc_bflt_expboard_u2) as dvc_bflt_expboard_u2, max(dvc_bflt_frstemp_u2) as dvc_bflt_frstemp_u2, max(dvc_bflt_splytemp_u21) as dvc_bflt_splytemp_u21, max(dvc_bflt_splytemp_u22) as dvc_bflt_splytemp_u22, max(dvc_bflt_rnttemp_u2) as dvc_bflt_rnttemp_u2, max(dvc_bflt_dfstemp_u21) as dvc_bflt_dfstemp_u21, max(dvc_bflt_dfstemp_u22) as dvc_bflt_dfstemp_u22, max(dvc_bflt_vehtemp) as dvc_bflt_vehtemp, max(dvc_bflt_seattemp) as dvc_bflt_seattemp, max(dvc_bflt_emergivt) as dvc_bflt_emergivt, max(dvc_bcomuflt_vfd_u11) as dvc_bcomuflt_vfd_u11, max(dvc_bcomuflt_vfd_u12) as dvc_bcomuflt_vfd_u12, max(dvc_bcomuflt_vfd_u21) as dvc_bcomuflt_vfd_u21, max(dvc_bcomuflt_vfd_u22) as dvc_bcomuflt_vfd_u22, max(dvc_bcomuflt_eev_u11) as dvc_bcomuflt_eev_u11, max(dvc_bcomuflt_eev_u12) as dvc_bcomuflt_eev_u12, max(dvc_bcomuflt_eev_u21) as dvc_bcomuflt_eev_u21, max(dvc_bcomuflt_eev_u22) as dvc_bcomuflt_eev_u22, max(dvc_bmcbflt_pwr_u1) as dvc_bmcbflt_pwr_u1, max(dvc_bmcbflt_pwr_u2) as dvc_bmcbflt_pwr_u2 FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '5 minutes' group by msg_calc_dvc_no"
+        else:
+            querysql = f"SELECT msg_calc_dvc_no, max(dvc_bocflt_ef_u11) as dvc_bocflt_ef_u11, max(dvc_bocflt_ef_u12) as dvc_bocflt_ef_u12, max(dvc_bocflt_cf_u11) as dvc_bocflt_cf_u11, max(dvc_bocflt_cf_u12) as dvc_bocflt_cf_u12, max(dvc_bflt_vfd_u11) as dvc_bflt_vfd_u11, max(dvc_blpflt_comp_u11) as dvc_blpflt_comp_u11, max(dvc_bscflt_comp_u11) as dvc_bscflt_comp_u11, max(dvc_bflt_vfd_u12) as dvc_bflt_vfd_u12, max(dvc_blpflt_comp_u12) as dvc_blpflt_comp_u12, max(dvc_bscflt_comp_u12) as dvc_bscflt_comp_u12, max(dvc_bflt_eev_u11) as dvc_bflt_eev_u11, max(dvc_bflt_eev_u12) as dvc_bflt_eev_u12, max(dvc_bflt_fad_u1) as dvc_bflt_fad_u1, max(dvc_bflt_rad_u1) as dvc_bflt_rad_u1, max(dvc_bflt_airclean_u1) as dvc_bflt_airclean_u1, max(dvc_bflt_expboard_u1) as dvc_bflt_expboard_u1, max(dvc_bflt_frstemp_u1) as dvc_bflt_frstemp_u1, max(dvc_bflt_splytemp_u11) as dvc_bflt_splytemp_u11, max(dvc_bflt_splytemp_u12) as dvc_bflt_splytemp_u12, max(dvc_bflt_rnttemp_u1) as dvc_bflt_rnttemp_u1, max(dvc_bflt_dfstemp_u11) as dvc_bflt_dfstemp_u11, max(dvc_bflt_dfstemp_u12) as dvc_bflt_dfstemp_u12, max(dvc_bocflt_ef_u21) as dvc_bocflt_ef_u21, max(dvc_bocflt_ef_u22) as dvc_bocflt_ef_u22, max(dvc_bocflt_cf_u21) as dvc_bocflt_cf_u21, max(dvc_bocflt_cf_u22) as dvc_bocflt_cf_u22, max(dvc_bflt_vfd_u21) as dvc_bflt_vfd_u21, max(dvc_blpflt_comp_u21) as dvc_blpflt_comp_u21, max(dvc_bscflt_comp_u21) as dvc_bscflt_comp_u21, max(dvc_bflt_vfd_u22) as dvc_bflt_vfd_u22, max(dvc_blpflt_comp_u22) as dvc_blpflt_comp_u22, max(dvc_bscflt_comp_u22) as dvc_bscflt_comp_u22, max(dvc_bflt_eev_u21) as dvc_bflt_eev_u21, max(dvc_bflt_eev_u22) as dvc_bflt_eev_u22, max(dvc_bflt_fad_u2) as dvc_bflt_fad_u2, max(dvc_bflt_rad_u2) as dvc_bflt_rad_u2, max(dvc_bflt_airclean_u2) as dvc_bflt_airclean_u2, max(dvc_bflt_expboard_u2) as dvc_bflt_expboard_u2, max(dvc_bflt_frstemp_u2) as dvc_bflt_frstemp_u2, max(dvc_bflt_splytemp_u21) as dvc_bflt_splytemp_u21, max(dvc_bflt_splytemp_u22) as dvc_bflt_splytemp_u22, max(dvc_bflt_rnttemp_u2) as dvc_bflt_rnttemp_u2, max(dvc_bflt_dfstemp_u21) as dvc_bflt_dfstemp_u21, max(dvc_bflt_dfstemp_u22) as dvc_bflt_dfstemp_u22, max(dvc_bflt_vehtemp) as dvc_bflt_vehtemp, max(dvc_bflt_seattemp) as dvc_bflt_seattemp, max(dvc_bflt_emergivt) as dvc_bflt_emergivt, max(dvc_bcomuflt_vfd_u11) as dvc_bcomuflt_vfd_u11, max(dvc_bcomuflt_vfd_u12) as dvc_bcomuflt_vfd_u12, max(dvc_bcomuflt_vfd_u21) as dvc_bcomuflt_vfd_u21, max(dvc_bcomuflt_vfd_u22) as dvc_bcomuflt_vfd_u22, max(dvc_bcomuflt_eev_u11) as dvc_bcomuflt_eev_u11, max(dvc_bcomuflt_eev_u12) as dvc_bcomuflt_eev_u12, max(dvc_bcomuflt_eev_u21) as dvc_bcomuflt_eev_u21, max(dvc_bcomuflt_eev_u22) as dvc_bcomuflt_eev_u22, max(dvc_bmcbflt_pwr_u1) as dvc_bmcbflt_pwr_u1, max(dvc_bmcbflt_pwr_u2) as dvc_bmcbflt_pwr_u2 FROM pro_macda WHERE msg_calc_dvc_time > now() - INTERVAL '5 minutes' group by msg_calc_dvc_no"
+        try:
+            returndata = {}
+            conn = self.conn_pool.getconn()
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cur.execute(querysql)
+            result = cur.fetchall()
+            rlen = len(result)
+            returndata['len'] = rlen
+            if rlen >= 1:
+                returndata['data'] = result
+            else:
+                returndata['data'] = None
+            cur.close()
+            self.conn_pool.putconn(conn)
+            return returndata
+        except Exception as exp:
+            log.error('Exception at tsutil.get_fault_data() %s ' % exp)
+            traceback.print_exc()
+
+    def get_statis_data(self, mode):
+        querysql = ''
+        if mode == 'dev':
+            querysql = f"SELECT msg_calc_dvc_no, last(dvc_dwoptime_ef_u1,msg_calc_parse_time) as dvc_dwoptime_ef_u1, last(dvc_dwoptime_cf_u1,msg_calc_parse_time) as dvc_dwoptime_cf_u1, last(dvc_dwoptime_comp_u11,msg_calc_parse_time) as dvc_dwoptime_comp_u11, last(dvc_dwoptime_comp_u12,msg_calc_parse_time) as dvc_dwoptime_comp_u12, last(dvc_dwopcount_fad_u1,msg_calc_parse_time) as dvc_dwopcount_fad_u1, last(dvc_dwopcount_rad_u1,msg_calc_parse_time) as dvc_dwopcount_rad_u1, last(dvc_dwoptime_ef_u2,msg_calc_parse_time) as dvc_dwoptime_ef_u2, last(dvc_dwoptime_cf_u2,msg_calc_parse_time) as dvc_dwoptime_cf_u2, last(dvc_dwoptime_comp_u21,msg_calc_parse_time) as dvc_dwoptime_comp_u21, last(dvc_dwoptime_comp_u22,msg_calc_parse_time) as dvc_dwoptime_comp_u22, last(dvc_dwopcount_fad_u2,msg_calc_parse_time) as dvc_dwopcount_fad_u2, last(dvc_dwopcount_rad_u2,msg_calc_parse_time) as dvc_dwopcount_rad_u2 FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '5 minutes' group by msg_calc_dvc_no"
+        else:
+            querysql = f"SELECT msg_calc_dvc_no, last(dvc_dwoptime_ef_u1,msg_calc_dvc_time) as dvc_dwoptime_ef_u1, last(dvc_dwoptime_cf_u1,msg_calc_dvc_time) as dvc_dwoptime_cf_u1, last(dvc_dwoptime_comp_u11,msg_calc_dvc_time) as dvc_dwoptime_comp_u11, last(dvc_dwoptime_comp_u12,msg_calc_dvc_time) as dvc_dwoptime_comp_u12, last(dvc_dwopcount_fad_u1,msg_calc_dvc_time) as dvc_dwopcount_fad_u1, last(dvc_dwopcount_rad_u1,msg_calc_dvc_time) as dvc_dwopcount_rad_u1, last(dvc_dwoptime_ef_u2,msg_calc_dvc_time) as dvc_dwoptime_ef_u2, last(dvc_dwoptime_cf_u2,msg_calc_dvc_time) as dvc_dwoptime_cf_u2, last(dvc_dwoptime_comp_u21,msg_calc_dvc_time) as dvc_dwoptime_comp_u21, last(dvc_dwoptime_comp_u22,msg_calc_dvc_time) as dvc_dwoptime_comp_u22, last(dvc_dwopcount_fad_u2,msg_calc_dvc_time) as dvc_dwopcount_fad_u2, last(dvc_dwopcount_rad_u2,msg_calc_dvc_time) as dvc_dwopcount_rad_u2 FROM pro_macda WHERE msg_calc_dvc_time > now() - INTERVAL '5 minutes' group by msg_calc_dvc_no"
+        try:
+            returndata = {}
+            conn = self.conn_pool.getconn()
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cur.execute(querysql)
+            result = cur.fetchall()
+            rlen = len(result)
+            returndata['len'] = rlen
+            if rlen >= 1:
+                returndata['data'] = result
+            else:
+                returndata['data'] = None
+            cur.close()
+            self.conn_pool.putconn(conn)
+            return returndata
+        except Exception as exp:
+            log.error('Exception at tsutil.get_fault_data() %s ' % exp)
+            traceback.print_exc()
+
     def get_refdata(self, mode, dvc_no):
         querysql = ''
         if mode == 'dev':
@@ -360,4 +435,8 @@ if __name__ == '__main__':
     if result['len'] > 0:
         log.debug(result['data']['rat_sub'])
         log.debug(result)
+
+    log.debug(tu.get_predict_data('dev'))
+    log.debug(tu.get_fault_data('dev'))
+    log.debug(tu.get_statis_data('dev'))
     #tu.get_refdata('pro', '5-98-1')

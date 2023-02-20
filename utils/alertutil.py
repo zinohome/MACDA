@@ -2,6 +2,7 @@
 #  @Software: MACDA
 import os
 import traceback
+
 from core.settings import settings
 import weakref
 from utils.log import log as log
@@ -59,6 +60,7 @@ class Alertutil(metaclass=Cached):
     def partcodefield(self):
         col = self.__partcode__['name']
         return col.tolist()
+
 
 if __name__ == '__main__':
     au = Alertutil()
