@@ -10,6 +10,8 @@ import simplejson as json
 import numpy as np
 import pandas as pd
 
+from utils.tsutil import TSutil
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'predictdata')
 
@@ -64,15 +66,18 @@ class Alertutil(metaclass=Cached):
 
 if __name__ == '__main__':
     au = Alertutil()
-    log.debug(au.predictfield)
-    log.debug(au.alertfield)
-    log.debug(au.partcodefield)
-    log.debug(au.getvalue('alertcode','bcomuflt_eev_u22','location'))
+    tu = TSutil()
     log.debug(f"SELECT msg_calc_dvc_no, max({') as dvc_, max('.join(au.predictfield)}) as dvc_ FROM dev_predict WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
     log.debug(f"SELECT msg_calc_dvc_no, max(dvc_{') as dvc_, max(dvc_'.join(au.alertfield)}) as dvc_ FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
     log.debug(f"SELECT msg_calc_dvc_no, last(dvc_{',msg_calc_parse_time) as dvc_, last(dvc_'.join(au.partcodefield)},msg_calc_parse_time) as dvc_ FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
+    log.debug(au.getvalue('alertcode','bcomuflt_eev_u22','location'))
+    log.debug(au.predictfield)
+    log.debug(au.alertfield)
+    log.debug(au.partcodefield)
 
-
+    log.debug(tu.get_predict_data('dev'))
+    log.debug(tu.get_fault_data('dev'))
+    log.debug(tu.get_statis_data('dev'))
     '''
     log.debug(au.__alertcode__)
     adf = au.__alertcode__
