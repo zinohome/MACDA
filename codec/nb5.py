@@ -134,6 +134,7 @@ class Nb5(KaitaiStruct):
         self.dvc_bflt_fad_u1 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_rad_u1 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_airclean_u1 = self._io.read_bits_int_be(1) != 0
+        self.dvc_bflt_expboard_u1 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_frstemp_u1 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_splytemp_u11 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_splytemp_u12 = self._io.read_bits_int_be(1) != 0
@@ -155,6 +156,7 @@ class Nb5(KaitaiStruct):
         self.dvc_bflt_fad_u2 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_rad_u2 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_airclean_u2 = self._io.read_bits_int_be(1) != 0
+        self.dvc_bflt_expboard_u2 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_frstemp_u2 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_splytemp_u21 = self._io.read_bits_int_be(1) != 0
         self.dvc_bflt_splytemp_u22 = self._io.read_bits_int_be(1) != 0

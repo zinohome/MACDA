@@ -198,6 +198,8 @@ seq:
     type: b1
   - id: dvc_bflt_airclean_u1
     type: b1
+  - id: dvc_bflt_expboard_u1
+    type: b1
   - id: dvc_bflt_frstemp_u1
     type: b1
   - id: dvc_bflt_splytemp_u11
@@ -239,6 +241,8 @@ seq:
   - id: dvc_bflt_rad_u2
     type: b1
   - id: dvc_bflt_airclean_u2
+    type: b1
+  - id: dvc_bflt_expboard_u2
     type: b1
   - id: dvc_bflt_frstemp_u2
     type: b1

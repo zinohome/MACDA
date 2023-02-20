@@ -101,6 +101,7 @@ class ACSignal(faust.Record):
     dvc_bflt_fad_u1: int
     dvc_bflt_rad_u1: int
     dvc_bflt_airclean_u1: int
+    dvc_bflt_expboard_u1: int
     dvc_bflt_frstemp_u1: int
     dvc_bflt_splytemp_u11: int
     dvc_bflt_splytemp_u12: int
@@ -122,6 +123,7 @@ class ACSignal(faust.Record):
     dvc_bflt_fad_u2: int
     dvc_bflt_rad_u2: int
     dvc_bflt_airclean_u2: int
+    dvc_bflt_expboard_u2: int
     dvc_bflt_frstemp_u2: int
     dvc_bflt_splytemp_u21: int
     dvc_bflt_splytemp_u22: int
@@ -276,6 +278,7 @@ json_schema = {
             {"name": "dvc_bflt_fad_u1", "type": "int"},
             {"name": "dvc_bflt_rad_u1", "type": "int"},
             {"name": "dvc_bflt_airclean_u1", "type": "int"},
+            {"name": "dvc_bflt_expboard_u1", "type": "int"},
             {"name": "dvc_bflt_frstemp_u1", "type": "int"},
             {"name": "dvc_bflt_splytemp_u11", "type": "int"},
             {"name": "dvc_bflt_splytemp_u12", "type": "int"},
@@ -297,6 +300,7 @@ json_schema = {
             {"name": "dvc_bflt_fad_u2", "type": "int"},
             {"name": "dvc_bflt_rad_u2", "type": "int"},
             {"name": "dvc_bflt_airclean_u2", "type": "int"},
+            {"name": "dvc_bflt_expboard_u2", "type": "int"},
             {"name": "dvc_bflt_frstemp_u2", "type": "int"},
             {"name": "dvc_bflt_splytemp_u21", "type": "int"},
             {"name": "dvc_bflt_splytemp_u22", "type": "int"},

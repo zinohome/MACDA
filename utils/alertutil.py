@@ -66,6 +66,9 @@ if __name__ == '__main__':
     log.debug(au.alertfield)
     log.debug(au.partcodefield)
     log.debug(au.getvalue('alertcode','bcomuflt_eev_u22','location'))
+    log.debug(f"SELECT msg_calc_dvc_no, max({') as dvc_, max('.join(au.predictfield)}) as dvc_ FROM dev_predict WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
+    log.debug(f"SELECT msg_calc_dvc_no, max(dvc_{') as dvc_, max(dvc_'.join(au.alertfield)}) as dvc_ FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
+    log.debug(f"SELECT msg_calc_dvc_no, last(dvc_{',msg_calc_parse_time) as dvc_, last(dvc_'.join(au.partcodefield)},msg_calc_parse_time) as dvc_ FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
 
 
     '''
