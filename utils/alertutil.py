@@ -67,6 +67,7 @@ class Alertutil(metaclass=Cached):
 
     def send_statistics(self, statslist):
         srvurl = settings.STATS_RECORD_URL
+        log.debug(srvurl)
         #headers = {"content-type":"application/json","x-hasura-admin-secret":"passw0rd"}
         headers = {"content-type":"application/json"}
         data = json.dumps(statslist, encoding="utf-8", ensure_ascii=False)
@@ -80,6 +81,7 @@ class Alertutil(metaclass=Cached):
 
     def send_predict(self, predictlist):
         srvurl = settings.FAULT_RECORD_URL
+        log.debug(srvurl)
         #headers = {"content-type":"application/json","x-hasura-admin-secret":"passw0rd"}
         headers = {"content-type":"application/json"}
         data = json.dumps(predictlist, encoding="utf-8", ensure_ascii=False)
