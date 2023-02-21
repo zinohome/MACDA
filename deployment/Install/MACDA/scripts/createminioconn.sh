@@ -8,7 +8,7 @@ http://kafka-connect:8083/connectors/MACDA-archive-to-minio/config \
     "connect.meta.data": "false",
     "connector.class": "io.confluent.connect.s3.S3SinkConnector",
     "enhanced.avro.schema.support": "false",
-    "flush.size": "100",
+    "flush.size": "500",
     "format.class": "io.confluent.connect.s3.format.json.JsonFormat",
     "key.converter": "org.apache.kafka.connect.storage.StringConverter",
     "name": "MACDA-archive-to-minio",
