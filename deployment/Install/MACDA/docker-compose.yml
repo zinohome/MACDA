@@ -16,12 +16,12 @@ services:
     - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://192.168.32.160:9092
     - --pandaproxy-addr PLAINTEXT://0.0.0.0:28082,OUTSIDE://0.0.0.0:8082
     - --advertise-pandaproxy-addr PLAINTEXT://redpanda:28082,OUTSIDE://192.168.32.160:8082
-    #volumes:
-    #  - "/data/MACDA/redpanda/data:/var/lib/redpanda/data"
+    volumes:
+      - "/data/MACDA/redpanda/data:/var/lib/redpanda/data"
     ports:
     #  - 8081:8081
     #  - 8082:8082
-    #  - 9092:9092
+      - 9092:9092
     #  - 9644:9644
     #  - 28082:28082
     #  - 29092:29092
@@ -130,7 +130,7 @@ services:
     #  - "8180:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: redpanda
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 192.168.32.160:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: redpanda:29092
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
       KAFKA_CLUSTERS_0_KSQLDBSERVER: "ksqldb-server:8088"
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://redpanda:8081"
@@ -154,7 +154,7 @@ services:
     #  - "8088:8088"
     environment:
       KSQL_LISTENERS: http://0.0.0.0:8088
-      KSQL_BOOTSTRAP_SERVERS: 192.168.32.160:9092
+      KSQL_BOOTSTRAP_SERVERS: redpanda:29092
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
     #healthcheck:
@@ -185,7 +185,7 @@ services:
     environment:
       SOURCE: "192.168.32.160:39092"
       TOPICS: "signal-in"
-      DESTINATION: "192.168.32.160:9092"
+      DESTINATION: "redpanda:29092"
       REPLICATION_FACTOR: "1"
       INTERNAL_REPLICATION_FACTOR: "1"
     networks:
@@ -244,6 +244,32 @@ services:
     #    retries: 5
     networks:
       - macdanet
+  graphql:
+    image: harbor.zinohome.com/macda/graphql-engine:v2.19.0
+    container_name: graphql
+    hostname: graphql
+    restart: unless-stopped
+    depends_on:
+    - timescaledb
+    #ports:
+    #- "8180:8080"
+    environment:
+      ## postgres database to store Hasura metadata
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:passw0rd@timescaledb:5432/postgres
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:passw0rd@timescaledb:5432/postgres
+      ## enable the console served by server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      ## uncomment next line to run console offline (i.e load console assets from server instead of CDN)
+      HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
+      ## uncomment next line to set an admin secret
+      HASURA_GRAPHQL_ADMIN_SECRET: passw0rd
+      HASURA_GRAPHQL_ENABLE_TELEMETRY: false
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+      HASURA_GRAPHQL_ENABLE_ALLOWLIST: true
+    networks:
+      - macdanet
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
@@ -265,10 +291,10 @@ services:
     #    retries: 5
     networks:
       - macdanet
-  macda:
+  macda1:
     image: jointhero/macda:nb-v1.0911
-    container_name: macda
-    hostname: macda
+    container_name: macda1
+    hostname: macda1
     restart: unless-stopped
     volumes:
       - "/data/MACDA/scripts/50_start_macda.sh:/etc/my_init.d/50_start_macda.sh"
@@ -276,6 +302,32 @@ services:
       - mirror-maker
     #ports:
     #  - 6166:6166
+    networks:
+      - macdanet
+  macda2:
+    image: jointhero/macda:nb-v1.0911
+    container_name: macda2
+    hostname: macda2
+    restart: unless-stopped
+    volumes:
+      - "/data/MACDA/scripts/50_start_macda.sh:/etc/my_init.d/50_start_macda.sh"
+    depends_on:
+      - mirror-maker
+    #ports:
+    #  - 6167:6166
+    networks:
+      - macdanet
+  macda3:
+    image: jointhero/macda:nb-v1.0911
+    container_name: macda3
+    hostname: macda3
+    restart: unless-stopped
+    volumes:
+      - "/data/MACDA/scripts/50_start_macda.sh:/etc/my_init.d/50_start_macda.sh"
+    depends_on:
+      - mirror-maker
+    #ports:
+    #  - 6168:6166
     networks:
       - macdanet
   desktop:
