@@ -60,6 +60,7 @@ async def store_signal(stream):
                     sdata['mileage'] = 0
                     statis_data_list.append(sdata)
         #log.debug('statis_data_list is : %s' % statis_data_list)
+        au.send_statistics(statis_data_list)
         # Generata predict data
         predict_data_list = []
         if predict_data['len'] > 0:
@@ -90,6 +91,7 @@ async def store_signal(stream):
                         pdata['endtime'] = '0'
                         predict_data_list.append(pdata)
         #log.debug('predict_data_list is : %s' % predict_data_list)
+        au.send_predict(predict_data_list)
         # Generata fault data
         fault_data_list = []
         if fault_data['len'] > 0:
@@ -120,3 +122,4 @@ async def store_signal(stream):
                         fdata['endtime'] = '0'
                         fault_data_list.append(fdata)
         #log.debug('fault_data_list is : %s' % fault_data_list)
+        au.send_predict(fault_data_list)
