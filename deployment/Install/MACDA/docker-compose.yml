@@ -298,6 +298,7 @@ services:
     restart: unless-stopped
     volumes:
       - "/data/MACDA/scripts/50_start_macda.sh:/etc/my_init.d/50_start_macda.sh"
+      - "/data/MACDA/macda/.env:/opt/MACDA/.env"
     depends_on:
       - mirror-maker
     #ports:
@@ -311,6 +312,7 @@ services:
     restart: unless-stopped
     volumes:
       - "/data/MACDA/scripts/50_start_macda.sh:/etc/my_init.d/50_start_macda.sh"
+      - "/data/MACDA/macda/.env:/opt/MACDA/.env"
     depends_on:
       - mirror-maker
     #ports:
@@ -324,6 +326,7 @@ services:
     restart: unless-stopped
     volumes:
       - "/data/MACDA/scripts/50_start_macda.sh:/etc/my_init.d/50_start_macda.sh"
+      - "/data/MACDA/macda/.env:/opt/MACDA/.env"
     depends_on:
       - mirror-maker
     #ports:
