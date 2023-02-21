@@ -47,6 +47,9 @@ class Settings(AppSettings):
     TSDB_URL: str = 'postgres://postgres:passw0rd@timescaledb:5432/postgres'
     TSDB_POOL_SIZE: int = 50
     TSDB_BATCH_TIME: int = 10
+    #Rest Server URL
+    FAULT_RECORD_URL: str = 'http://192.168.32.160:8180/api/rest/InsertSrvAlert'
+    STATS_RECORD_URL: str = 'http://192.168.32.160:8180/api/rest/InsertSrvLife'
 
 settings = Settings(_env_file=os.path.join(BASE_DIR, '.env'))
 

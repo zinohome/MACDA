@@ -47,6 +47,9 @@ class AppSettings(BaseSettings):
     TSDB_URL: str = Field('postgres://postgres:passw0rd@timescaledb:5432/postgres', env='TSDB_URL')
     TSDB_POOL_SIZE: int = Field(20, env='TSDB_POOL_SIZE')
     TSDB_BATCH_TIME: int = Field(10, env='TSDB_BATCH_TIME')
+    #Rest Server URL
+    FAULT_RECORD_URL: str = Field('http://192.168.32.160:8180/api/rest/InsertSrvAlert', env='FAULT_RECORD_URL')
+    STATS_RECORD_URL: str = Field('http://192.168.32.160:8180/api/rest/InsertSrvLife', env='STATS_RECORD_URL')
 
     @validator('KAFKA_BOOTSTRAP_SERVER', 'SCHEMA_REGISTRY_URL', pre = True)
     def valid_url(url: str):

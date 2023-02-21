@@ -66,7 +66,7 @@ class Alertutil(metaclass=Cached):
         return col.tolist()
 
     def send_statistics(self, statslist):
-        srvurl = 'http://192.168.32.160:8180/api/rest/InsertSrvLife'
+        srvurl = settings.STATS_RECORD_URL
         #headers = {"content-type":"application/json","x-hasura-admin-secret":"passw0rd"}
         headers = {"content-type":"application/json"}
         data = json.dumps(statslist, encoding="utf-8", ensure_ascii=False)
@@ -79,7 +79,7 @@ class Alertutil(metaclass=Cached):
             traceback.print_exc()
 
     def send_predict(self, predictlist):
-        srvurl = 'http://192.168.32.160:8180/api/rest/InsertSrvAlert'
+        srvurl = settings.FAULT_RECORD_URL
         #headers = {"content-type":"application/json","x-hasura-admin-secret":"passw0rd"}
         headers = {"content-type":"application/json"}
         data = json.dumps(predictlist, encoding="utf-8", ensure_ascii=False)
