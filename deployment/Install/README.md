@@ -6,4 +6,4 @@ INSTALL
 4.startup macda: 
   cd MACDA && docker-compose up -d && docker-compose stop macda1 && docker-compose stop macda2 && docker-compose stop macda3
 wait for 120 seconds:
-  docker-compose start macda
+  docker-compose start macda1 && docker-compose start macda2 && docker-compose start macda3
