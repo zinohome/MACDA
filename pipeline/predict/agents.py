@@ -40,7 +40,6 @@ async def store_signal(stream):
                 ref_pump_u1 = 1
             if predictdata['data']['w_frequ2_sub'] < 1 and predictdata['data']['w_crntu2_sub'] > 2:
                 ref_pump_u2 = 1
-            ref_pump_u2 = 1
             # sensor predict
             fat_sensor = 0
             rat_sensor = 0
