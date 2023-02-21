@@ -16,7 +16,7 @@ http://kafka-connect:8083/connectors/MACDA-archive-to-minio/config \
     "s3.region": "ap-east-1",
     "storage.class": "io.confluent.connect.s3.storage.S3Storage",
     "store.url": "http://minio:9000",
-    "topics.regex": "^MACDA-archive-signal-parsed-\\d*-\\d*-\\d*$",
+    "topics.regex": "^MACDA-archive-signal-parsed-0\\d*0\\d*0\\d*$",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter.schemas.enable": "false"
 }'
