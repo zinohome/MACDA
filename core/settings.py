@@ -48,6 +48,8 @@ class Settings(AppSettings):
     TSDB_POOL_SIZE: int = 50
     TSDB_BATCH_TIME: int = 10
     #Rest Server URL
+    SEND_FAULT_RECORD: bool = False
+    SEND_STATS_RECORD: bool = False
     FAULT_RECORD_URL: str = 'http://192.168.32.160:8180/api/rest/InsertSrvAlert'
     STATS_RECORD_URL: str = 'http://192.168.32.160:8180/api/rest/InsertSrvLife'
 

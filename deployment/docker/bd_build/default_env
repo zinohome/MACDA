@@ -15,5 +15,7 @@ APP_EXCEPTIONN_DETAIL = True
 TSDB_URL=postgres://postgres:passw0rd@timescaledb:5432/postgres
 TSDB_POOL_SIZE=50
 TSDB_BATCH_TIME=10
+SEND_FAULT_RECORD=False
+SEND_STATS_RECORD=False
 FAULT_RECORD_URL=http://10.12.18.192:8080/gate/METRO-DATAACCESS/api/faultRecordsSubsystem/saveRecord
 STATS_RECORD_URL=http:/172.20.250.88:8080/gate/METRO-PHM/api/devices/status/train/saveOrUpdate

@@ -72,12 +72,13 @@ class Alertutil(metaclass=Cached):
         headers = {"content-type":"application/json"}
         data = json.dumps(statslist, encoding="utf-8", ensure_ascii=False)
         #log.debug(data)
-        try:
-            response = requests.post(srvurl, data.encode(), headers=headers)
-            log.debug('Send Statistic data with response code: [%s] ' % response.status_code)
-        except Exception as exp:
-            log.error('Exception at alrtutil.send_predict() %s ' % exp)
-            traceback.print_exc()
+        if settings.SEND_STATS_RECORD:
+            try:
+                response = requests.post(srvurl, data.encode(), headers=headers)
+                log.debug('Send Statistic data with response code: [%s] ' % response.status_code)
+            except Exception as exp:
+                log.error('Exception at alrtutil.send_predict() %s ' % exp)
+                traceback.print_exc()
 
     def send_predict(self, predictlist):
         srvurl = settings.FAULT_RECORD_URL
@@ -86,12 +87,13 @@ class Alertutil(metaclass=Cached):
         headers = {"content-type":"application/json"}
         data = json.dumps(predictlist, encoding="utf-8", ensure_ascii=False)
         #log.debug(data)
-        try:
-            response = requests.post(srvurl, data.encode(), headers=headers)
-            log.debug('Send Alert data with response code: [%s] ' % response.status_code)
-        except Exception as exp:
-            log.error('Exception at alrtutil.send_predict() %s ' % exp)
-            traceback.print_exc()
+        if settings.SEND_FAULT_RECORD:
+            try:
+                response = requests.post(srvurl, data.encode(), headers=headers)
+                log.debug('Send Alert data with response code: [%s] ' % response.status_code)
+            except Exception as exp:
+                log.error('Exception at alrtutil.send_predict() %s ' % exp)
+                traceback.print_exc()
 
 
 
