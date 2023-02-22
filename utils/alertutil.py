@@ -110,6 +110,9 @@ if __name__ == '__main__':
         predict_data = tu.get_predict_data('pro')
         fault_data = tu.get_fault_data('pro')
         statis_data = tu.get_statis_data('pro')
+    log.debug('predict_data is %s' % predict_data)
+    log.debug('fault_data is %s' % fault_data)
+    log.debug('statis_data is %s' % statis_data)
     # Generata statis data
     statis_data_list = []
     if statis_data['len'] > 0:
@@ -165,7 +168,7 @@ if __name__ == '__main__':
                     pdata['station2'] = str(au.getvalue('alertcode',field,'station2'))
                     pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
                     pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
-                    pdata['starttime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                    pdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
                     pdata['endtime'] = '0'
                     predict_data_list.append(pdata)
     log.debug('predict_data_list is : %s' % predict_data_list)
@@ -197,11 +200,14 @@ if __name__ == '__main__':
                     fdata['station2'] = str(au.getvalue('alertcode', field, 'station2'))
                     fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
                     fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
-                    fdata['starttime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                    fdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
                     fdata['endtime'] = '0'
                     fault_data_list.append(fdata)
     log.debug('fault_data_list is : %s' % fault_data_list)
     au.send_predict(fault_data_list)
+
+    log.debug(au.predictfield)
+    log.debug(au.alertfield)
     '''
     log.debug(f"SELECT msg_calc_dvc_no, max({') as dvc_, max('.join(au.predictfield)}) as dvc_ FROM dev_predict WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
     log.debug(f"SELECT msg_calc_dvc_no, max(dvc_{') as dvc_, max(dvc_'.join(au.alertfield)}) as dvc_ FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
