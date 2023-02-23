@@ -34,6 +34,7 @@ log.add(sys.stdout,
             enqueue=True)
 
 if __name__ == '__main__':
+    '''
     log.success(settings.KAFKA_BOOTSTRAP_SERVER)
     log.success(settings.DEBUG)
     log.success('[测试log] hello, world')
@@ -43,3 +44,8 @@ if __name__ == '__main__':
     log.error('[测试log] hello, world')
     log.critical('[测试log] hello, world')
     #log.exception('[测试log] hello, world')
+    '''
+    hexstr = '2c 01 00 fffd 46 28 1b 5a 00 74 00 05 00 0a 00 00 00 62'
+    log.debug(hexstr)
+    b = bytes.fromhex(hexstr)
+    log.debug(b)
