@@ -3,6 +3,8 @@ import time
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+
+from core.settings import settings
 from utils.log import log as log
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
@@ -210,11 +212,18 @@ class Nb5(KaitaiStruct):
         self.msg_crc = self._io.read_u2be()
 
     def from_file_to_dict(binfile):
+        dev_mode = settings.DEV_MODE
         nb5dict = Nb5.from_file(binfile).__dict__.copy()
-        nb5dict[
-            'msg_calc_dvc_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}-{nb5dict['msg_carriage_no']}"
-        nb5dict[
-            'msg_calc_train_no'] = f"{nb5dict['msg_line_no']}-{nb5dict['msg_train_no']}"
+        if dev_mode:
+            nb5dict[
+                'msg_calc_dvc_no'] = f"0{nb5dict['msg_line_no']}0{str(nb5dict['msg_train_no']).zfill(2)}0{nb5dict['msg_carriage_no']}"
+            nb5dict[
+                'msg_calc_train_no'] = f"0{nb5dict['msg_line_no']}0{str(nb5dict['msg_train_no']).zfill(2)}"
+        else:
+            nb5dict[
+                'msg_calc_dvc_no'] = f"0{str(nb5dict['msg_train_no']).zfill(5)}0{nb5dict['msg_carriage_no']}"
+            nb5dict[
+                'msg_calc_train_no'] = f"0{str(nb5dict['msg_train_no']).zfill(5)}"
         nb5dict[
             'msg_calc_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
         nb5dict['msg_calc_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -244,11 +253,18 @@ class Nb5(KaitaiStruct):
         return nb5dict
 
     def from_bytes_to_dict(bytesobj):
+        dev_mode = settings.DEV_MODE
         nb5dict = Nb5.from_bytes(bytesobj).__dict__.copy()
-        nb5dict[
-            'msg_calc_dvc_no'] = f"0{nb5dict['msg_line_no']}0{str(nb5dict['msg_train_no']).zfill(2)}0{nb5dict['msg_carriage_no']}"
-        nb5dict[
-            'msg_calc_train_no'] = f"0{nb5dict['msg_line_no']}0{str(nb5dict['msg_train_no']).zfill(2)}"
+        if dev_mode:
+            nb5dict[
+                'msg_calc_dvc_no'] = f"0{nb5dict['msg_line_no']}0{str(nb5dict['msg_train_no']).zfill(2)}0{nb5dict['msg_carriage_no']}"
+            nb5dict[
+                'msg_calc_train_no'] = f"0{nb5dict['msg_line_no']}0{str(nb5dict['msg_train_no']).zfill(2)}"
+        else:
+            nb5dict[
+                'msg_calc_dvc_no'] = f"0{str(nb5dict['msg_train_no']).zfill(5)}0{nb5dict['msg_carriage_no']}"
+            nb5dict[
+                'msg_calc_train_no'] = f"0{str(nb5dict['msg_train_no']).zfill(5)}"
         nb5dict[
             'msg_calc_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
         nb5dict['msg_calc_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
