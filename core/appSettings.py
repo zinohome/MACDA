@@ -48,6 +48,8 @@ class AppSettings(BaseSettings):
     TSDB_POOL_SIZE: int = Field(20, env='TSDB_POOL_SIZE')
     TSDB_BATCH_TIME: int = Field(10, env='TSDB_BATCH_TIME')
     #Rest Server URL
+    SEND_FAULT_INTERVAL: int = Field(300, env='SEND_FAULT_INTERVAL')
+    SEND_STATS_INTERVAL: int = Field(14400, env='SEND_STATS_INTERVAL')
     SEND_FAULT_RECORD: bool = Field(False, env='SEND_FAULT_RECORD')
     SEND_STATS_RECORD: bool = Field(False, env='SEND_STATS_RECORD')
     FAULT_RECORD_URL: str = Field('http://192.168.32.160:8180/api/rest/InsertSrvAlert', env='FAULT_RECORD_URL')
