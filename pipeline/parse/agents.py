@@ -22,10 +22,14 @@ async def parse_signal(stream):
         log.debug("-------------------- Get binary data --------------------")
         # binascii convert ascii to bin
         datadict = json.loads(str(data, encoding = 'utf-8'))
+        jschema = {
+            "type": "struct",
+            "name": "ACSignal"
+        }
         if 'message_data' in datadict.keys():
             # Parse data and send to parsed topic
             parsed_dict = Nb5.from_bytes_to_dict(binascii.a2b_hex(datadict['message_data']))
-            out_record = {"schema":json_schema,"payload":parsed_dict}
+            out_record = {"schema":jschema,"payload":parsed_dict}
             dev_mode = settings.DEV_MODE
             if dev_mode:
                 key = f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_parse_time']}"
