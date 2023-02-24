@@ -221,9 +221,9 @@ class Nb5(KaitaiStruct):
                 'msg_calc_train_no'] = f"0{nb5dict['msg_line_no']}0{str(nb5dict['msg_train_no']).zfill(2)}"
         else:
             nb5dict[
-                'msg_calc_dvc_no'] = f"0{str(nb5dict['msg_train_no']).zfill(5)}0{nb5dict['msg_carriage_no']}"
+                'msg_calc_dvc_no'] = f"{str(nb5dict['msg_train_no']).zfill(5)}0{nb5dict['msg_carriage_no']}"
             nb5dict[
-                'msg_calc_train_no'] = f"0{str(nb5dict['msg_train_no']).zfill(5)}"
+                'msg_calc_train_no'] = f"{str(nb5dict['msg_train_no']).zfill(5)}"
         nb5dict[
             'msg_calc_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
         nb5dict['msg_calc_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -262,9 +262,9 @@ class Nb5(KaitaiStruct):
                 'msg_calc_train_no'] = f"0{nb5dict['msg_line_no']}0{str(nb5dict['msg_train_no']).zfill(2)}"
         else:
             nb5dict[
-                'msg_calc_dvc_no'] = f"0{str(nb5dict['msg_train_no']).zfill(5)}0{nb5dict['msg_carriage_no']}"
+                'msg_calc_dvc_no'] = f"{str(nb5dict['msg_train_no']).zfill(5)}0{nb5dict['msg_carriage_no']}"
             nb5dict[
-                'msg_calc_train_no'] = f"0{str(nb5dict['msg_train_no']).zfill(5)}"
+                'msg_calc_train_no'] = f"{str(nb5dict['msg_train_no']).zfill(5)}"
         nb5dict[
             'msg_calc_dvc_time'] = f"20{nb5dict['msg_src_dvc_year']}-{nb5dict['msg_src_dvc_month']}-{nb5dict['msg_src_dvc_day']} {nb5dict['msg_src_dvc_hour']}:{nb5dict['msg_src_dvc_minute']}:{nb5dict['msg_src_dvc_second']}"
         nb5dict['msg_calc_parse_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
