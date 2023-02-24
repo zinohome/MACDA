@@ -1,6 +1,6 @@
 /tmp/macda.log {
-	weekly	
-	rotate 8
+	daily
+	rotate 5
 	compress
 	delaycompress
 	missingok

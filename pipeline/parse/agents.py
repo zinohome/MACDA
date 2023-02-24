@@ -21,6 +21,10 @@ async def parse_signal(stream):
     async for data in stream:
         log.debug("-------------------- Get binary data --------------------")
         dev_mode = settings.DEV_MODE
+        jschema = {
+            "type": "struct",
+            "name": "ACSignal"
+        }
         if dev_mode:
             # Parse data and send to parsed topic
             parsed_dict = Nb5.from_bytes_to_dict(data)
@@ -39,10 +43,6 @@ async def parse_signal(stream):
         else:
             # binascii convert ascii to bin
             datadict = json.loads(str(data, encoding = 'utf-8'))
-            jschema = {
-                "type": "struct",
-                "name": "ACSignal"
-            }
             if 'message_data' in datadict.keys():
                 # Parse data and send to parsed topic
                 parsed_dict = Nb5.from_bytes_to_dict(binascii.a2b_hex(datadict['message_data']))
