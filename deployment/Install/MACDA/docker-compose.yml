@@ -190,11 +190,11 @@ services:
       INTERNAL_REPLICATION_FACTOR: "1"
     networks:
       - macdanet
-  minio:
+  newminio:
     # NOTE: Please use the latest version here!
     image: harbor.zinohome.com/macda/minio:latest
-    container_name: minio
-    hostname: minio
+    container_name: newminio
+    hostname: newminio
     restart: unless-stopped
     command: server --console-address ":9001" /data
     environment:
