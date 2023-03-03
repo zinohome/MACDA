@@ -38,27 +38,28 @@ async def on_started():
         for item in predict_data['data']:
             dvc_no = item['msg_calc_dvc_no']
             dvc_no_list = [i for i in dvc_no.split('0') if i != '']
-            line_no = dvc_no_list[0]
-            train_no = dvc_no_list[1]
-            carbin_no = dvc_no_list[2]
-            trainNo = f"0{line_no}0{str(train_no).zfill(2)}"
-            #log.debug('line_no: %s, train_no: %s, carbin_no: %s' % (line_no, train_no, carbin_no))
-            for field in au.predictfield:
-                if item[field] > 0:
-                    pdata = {}
-                    pdata['message_type'] = '1'
-                    pdata['train_type'] = 'B2'
-                    pdata['train_no'] = trainNo
-                    pdata['coach'] = coachdict[carbin_no]
-                    pdata['location'] = au.getvalue('alertcode',field,'location')
-                    pdata['code'] = au.getvalue('alertcode',field,'code').replace('HVAC1',f"HVAC{carbin_no}")
-                    pdata['station1'] = str(au.getvalue('alertcode',field,'station1'))
-                    pdata['station2'] = str(au.getvalue('alertcode',field,'station2'))
-                    pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
-                    pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
-                    pdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
-                    pdata['endtime'] = '0'
-                    predict_data_list.append(pdata)
+            if len(dvc_no_list) == 3:
+                line_no = dvc_no_list[0]
+                train_no = dvc_no_list[1]
+                carbin_no = dvc_no_list[2]
+                trainNo = f"0{line_no}0{str(train_no).zfill(2)}"
+                #log.debug('line_no: %s, train_no: %s, carbin_no: %s' % (line_no, train_no, carbin_no))
+                for field in au.predictfield:
+                    if item[field] > 0:
+                        pdata = {}
+                        pdata['message_type'] = '1'
+                        pdata['train_type'] = 'B2'
+                        pdata['train_no'] = trainNo
+                        pdata['coach'] = coachdict[carbin_no]
+                        pdata['location'] = au.getvalue('alertcode',field,'location')
+                        pdata['code'] = au.getvalue('alertcode',field,'code').replace('HVAC1',f"HVAC{carbin_no}")
+                        pdata['station1'] = str(au.getvalue('alertcode',field,'station1'))
+                        pdata['station2'] = str(au.getvalue('alertcode',field,'station2'))
+                        pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
+                        pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
+                        pdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
+                        pdata['endtime'] = '0'
+                        predict_data_list.append(pdata)
     #log.debug('predict_data_list is : %s' % predict_data_list)
     au.send_predict(predict_data_list)
     # Generata fault data
@@ -69,26 +70,27 @@ async def on_started():
         for item in fault_data['data']:
             dvc_no = item['msg_calc_dvc_no']
             dvc_no_list = [i for i in dvc_no.split('0') if i != '']
-            line_no = dvc_no_list[0]
-            train_no = dvc_no_list[1]
-            carbin_no = dvc_no_list[2]
-            trainNo = f"0{line_no}0{str(train_no).zfill(2)}"
-            # log.debug('line_no: %s, train_no: %s, carbin_no: %s' % (line_no, train_no, carbin_no))
-            for field in au.alertfield:
-                if item[f"dvc_{field}"] > 0:
-                    fdata = {}
-                    fdata['message_type'] = '1'
-                    fdata['train_type'] = 'B2'
-                    fdata['train_no'] = trainNo
-                    fdata['coach'] = coachdict[carbin_no]
-                    fdata['location'] = au.getvalue('alertcode', field, 'location')
-                    fdata['code'] = au.getvalue('alertcode', field, 'code').replace('HVAC1', f"HVAC{carbin_no}")
-                    fdata['station1'] = str(au.getvalue('alertcode', field, 'station1'))
-                    fdata['station2'] = str(au.getvalue('alertcode', field, 'station2'))
-                    fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
-                    fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
-                    fdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
-                    fdata['endtime'] = '0'
-                    fault_data_list.append(fdata)
+            if len(dvc_no_list) == 3:
+                line_no = dvc_no_list[0]
+                train_no = dvc_no_list[1]
+                carbin_no = dvc_no_list[2]
+                trainNo = f"0{line_no}0{str(train_no).zfill(2)}"
+                # log.debug('line_no: %s, train_no: %s, carbin_no: %s' % (line_no, train_no, carbin_no))
+                for field in au.alertfield:
+                    if item[f"dvc_{field}"] > 0:
+                        fdata = {}
+                        fdata['message_type'] = '1'
+                        fdata['train_type'] = 'B2'
+                        fdata['train_no'] = trainNo
+                        fdata['coach'] = coachdict[carbin_no]
+                        fdata['location'] = au.getvalue('alertcode', field, 'location')
+                        fdata['code'] = au.getvalue('alertcode', field, 'code').replace('HVAC1', f"HVAC{carbin_no}")
+                        fdata['station1'] = str(au.getvalue('alertcode', field, 'station1'))
+                        fdata['station2'] = str(au.getvalue('alertcode', field, 'station2'))
+                        fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
+                        fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
+                        fdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
+                        fdata['endtime'] = '0'
+                        fault_data_list.append(fdata)
     #log.debug('fault_data_list is : %s' % fault_data_list)
     au.send_predict(fault_data_list)

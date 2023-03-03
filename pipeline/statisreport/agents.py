@@ -34,25 +34,26 @@ async def on_started():
         for item in statis_data['data']:
             dvc_no = item['msg_calc_dvc_no']
             dvc_no_list = [i for i in dvc_no.split('0') if i != '']
-            line_no = dvc_no_list[0]
-            train_no = dvc_no_list[1]
-            carbin_no = dvc_no_list[2]
-            trainNo = f"0{line_no}0{str(train_no).zfill(2)}"
-            partCodepre = f"0{line_no}0{str(int(carbin_no) - 1).zfill(2)}"
-            # log.debug('line_no: %s, train_no: %s, carbin_no: %s' % (line_no, train_no, carbin_no))
-            for code in au.partcodefield:
-                sdata = {}
-                sdata['lineName'] = str(line_no)
-                sdata['trainType'] = 'B2'
-                sdata['trainNo'] = trainNo
-                sdata['partCode'] = str(au.getvalue('partcode', code, 'part_code')).replace('500', partCodepre)
-                if 'rad' in code or 'fad' in code:
-                    sdata['serviceTime'] = 0
-                    sdata['serviceValue'] = item[f"dvc_{code}"]
-                else:
-                    sdata['serviceTime'] = item[f"dvc_{code}"]
-                    sdata['serviceValue'] = 0
-                sdata['mileage'] = 0
-                statis_data_list.append(sdata)
+            if len(dvc_no_list) == 3:
+                line_no = dvc_no_list[0]
+                train_no = dvc_no_list[1]
+                carbin_no = dvc_no_list[2]
+                trainNo = f"0{line_no}0{str(train_no).zfill(2)}"
+                partCodepre = f"0{line_no}0{str(int(carbin_no) - 1).zfill(2)}"
+                # log.debug('line_no: %s, train_no: %s, carbin_no: %s' % (line_no, train_no, carbin_no))
+                for code in au.partcodefield:
+                    sdata = {}
+                    sdata['lineName'] = str(line_no)
+                    sdata['trainType'] = 'B2'
+                    sdata['trainNo'] = trainNo
+                    sdata['partCode'] = str(au.getvalue('partcode', code, 'part_code')).replace('500', partCodepre)
+                    if 'rad' in code or 'fad' in code:
+                        sdata['serviceTime'] = 0
+                        sdata['serviceValue'] = item[f"dvc_{code}"]
+                    else:
+                        sdata['serviceTime'] = item[f"dvc_{code}"]
+                        sdata['serviceValue'] = 0
+                    sdata['mileage'] = 0
+                    statis_data_list.append(sdata)
     #log.debug('statis_data_list is : %s' % statis_data_list)
     au.send_statistics(statis_data_list)

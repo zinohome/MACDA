@@ -34,6 +34,15 @@ log.add(sys.stdout,
             enqueue=True)
 
 if __name__ == '__main__':
+    a = "0500102"
+    dvc_no_list = [i for i in a.split('0') if i != '']
+    if len(dvc_no_list) == 3:
+        log.debug(dvc_no_list)
+    a = "0000002"
+    dvc_no_list = [i for i in a.split('0') if i != '']
+    if len(dvc_no_list) == 3:
+        log.debug(dvc_no_list)
+
     '''
     log.success(settings.KAFKA_BOOTSTRAP_SERVER)
     log.success(settings.DEBUG)
