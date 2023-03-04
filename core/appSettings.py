@@ -46,6 +46,7 @@ class AppSettings(BaseSettings):
     APP_LOG_FILENAME: str = Field('macda.log', env='APP_LOG_FILENAME')
     TSDB_URL: str = Field('postgres://postgres:passw0rd@timescaledb:5432/postgres', env='TSDB_URL')
     TSDB_POOL_SIZE: int = Field(20, env='TSDB_POOL_SIZE')
+    TSDB_PARSE_BATCH_TIME: int = Field(10, env='TSDB_PARSE_BATCH_TIME')
     TSDB_BATCH_TIME: int = Field(10, env='TSDB_BATCH_TIME')
     #Rest Server URL
     SEND_FAULT_INTERVAL: int = Field(300, env='SEND_FAULT_INTERVAL')
