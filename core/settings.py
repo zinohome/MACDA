@@ -20,6 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class Settings(AppSettings):
     DEBUG: bool = True
     DEV_MODE: bool = True
+    RUN_MODE: str = 'Parse'
     SOURCE_TOPIC_NAME: str = 'signal-in'
     PARSED_TOPIC_NAME: str = 'signal-parsed'
     KAFKA_BOOTSTRAP_SERVER: str = 'kafka://localhost:9092'
@@ -63,3 +64,4 @@ settings = Settings(_env_file=os.path.join(BASE_DIR, '.env'))
 
 if __name__ == '__main__':
     print(settings.KAFKA_BOOTSTRAP_SERVER)
+    print(settings.RUN_MODE)

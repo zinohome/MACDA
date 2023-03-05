@@ -19,6 +19,7 @@ class AppSettings(BaseSettings):
     APP_TITLE: str = 'MACDA'
     APP_VERSION: str = '1.0911'
     DEBUG: bool = Field(True, env='DEBUG')
+    RUN_MODE: str = Field('Parse', env='RUN_MODE')
     DEV_MODE: bool = Field(True, env='DEV_MODE')
     SOURCE_TOPIC_NAME: str = Field('signal-in', env='SOURCE_TOPIC_NAME')
     PARSED_TOPIC_NAME: str = Field('signal-in', env='PARSED_TOPIC_NAME')
