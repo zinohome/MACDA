@@ -23,10 +23,10 @@ app = faust.App(
 )
 app.web.blueprints.add('/stats/', 'faust.web.apps.stats:blueprint')
 run_mode = settings.RUN_MODE
-if run_mode.scrip().lower() == 'parse':
+if run_mode.strip().lower() == 'parse':
     # run parse
     app.discover('pipeline.batchparse')
-elif run_mode.scrip().lower() == 'store':
+elif run_mode.strip().lower() == 'store':
     # run store
     app.discover('pipeline.batchstore')
 else:
