@@ -18,7 +18,7 @@ from utils.log import log as log
 
 @app.agent(input_topic)
 async def parse_signal(stream):
-    async for datas in stream.take(1000, within=settings.TSDB_PARSE_BATCH_TIME):
+    async for datas in stream.take(settings.TSDB_PARSE_BATCH, within=settings.TSDB_PARSE_BATCH_TIME):
         log.debug("-------------------- Batch Get binary data --------------------")
         for data in datas:
             dev_mode = settings.DEV_MODE

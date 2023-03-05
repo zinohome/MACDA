@@ -48,6 +48,8 @@ class Settings(AppSettings):
     TSDB_POOL_SIZE: int = 50
     TSDB_PARSE_BATCH_TIME: int = 10
     TSDB_BATCH_TIME: int = 10
+    TSDB_PARSE_BATCH: int = 200
+    TSDB_BATCH: int = 200
     #Rest Server URL
     SEND_FAULT_INTERVAL: int = 300
     SEND_STATS_INTERVAL: int = 14400

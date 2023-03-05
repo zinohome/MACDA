@@ -48,6 +48,8 @@ class AppSettings(BaseSettings):
     TSDB_POOL_SIZE: int = Field(20, env='TSDB_POOL_SIZE')
     TSDB_PARSE_BATCH_TIME: int = Field(10, env='TSDB_PARSE_BATCH_TIME')
     TSDB_BATCH_TIME: int = Field(10, env='TSDB_BATCH_TIME')
+    TSDB_PARSE_BATCH: int = Field(200, env='TSDB_PARSE_BATCH')
+    TSDB_BATCH: int = Field(200, env='TSDB_BATCH')
     #Rest Server URL
     SEND_FAULT_INTERVAL: int = Field(300, env='SEND_FAULT_INTERVAL')
     SEND_STATS_INTERVAL: int = Field(14400, env='SEND_STATS_INTERVAL')
