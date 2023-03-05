@@ -13,7 +13,7 @@ import faust
 from core.settings import settings
 
 app = faust.App(
-    settings.APP_TITLE,
+    f"{settings.APP_TITLE}[{settings.RUN_MODE}]",
     version = float(settings.APP_VERSION),
     broker = settings.KAFKA_BOOTSTRAP_SERVER,
     store = settings.STORE_URI,
