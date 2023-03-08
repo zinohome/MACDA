@@ -51,7 +51,7 @@ class AppSettings(BaseSettings):
     TSDB_BATCH_TIME: int = Field(10, env='TSDB_BATCH_TIME')
     TSDB_PARSE_BATCH: int = Field(200, env='TSDB_PARSE_BATCH')
     TSDB_BATCH: int = Field(200, env='TSDB_BATCH')
-    PREDICT_SKIP_BATCH: int = Field(200, env='PREDICT_SKIP_BATCH')
+    PREDICT_SKIP_BATCH: int = Field(600, env='PREDICT_SKIP_BATCH')
     #Rest Server URL
     SEND_FAULT_INTERVAL: int = Field(300, env='SEND_FAULT_INTERVAL')
     SEND_STATS_INTERVAL: int = Field(14400, env='SEND_STATS_INTERVAL')
