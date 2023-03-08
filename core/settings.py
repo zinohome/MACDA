@@ -51,6 +51,7 @@ class Settings(AppSettings):
     TSDB_BATCH_TIME: int = 10
     TSDB_PARSE_BATCH: int = 200
     TSDB_BATCH: int = 200
+    PREDICT_SKIP_BATCH: int = 200
     #Rest Server URL
     SEND_FAULT_INTERVAL: int = 300
     SEND_STATS_INTERVAL: int = 14400
