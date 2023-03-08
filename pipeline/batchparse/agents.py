@@ -47,7 +47,7 @@ async def parse_signal(stream):
                 if 'message_data' in datadict.keys():
                     # Parse data and send to parsed topic
                     parsed_dict = Nb5.from_bytes_to_dict(binascii.a2b_hex(datadict['message_data']))
-                    if not parsed_dict['msg_calc_dvc_no'].strip().startswith('2059-'):
+                    if not parsed_dict['msg_calc_dvc_time'].strip().startswith('2059-'):
                         out_record = {"schema":jschema,"payload":parsed_dict}
                         if dev_mode:
                             key = f"{parsed_dict['msg_calc_dvc_no']}-{parsed_dict['msg_calc_parse_time']}"
