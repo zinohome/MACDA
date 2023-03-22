@@ -26,3 +26,4 @@ SEND_FAULT_RECORD=False
 SEND_STATS_RECORD=False
 FAULT_RECORD_URL=http://10.12.18.192:8080/gate/METRO-DATAACCESS/api/faultRecordsSubsystem/saveRecord
 STATS_RECORD_URL=http:/172.20.250.88:8080/gate/METRO-PHM/api/devices/status/train/saveOrUpdate
+SYS_STATUS_URL=http://172.20.250.88:8080/gate/METRO-SELFCHECK/api/faultRecordsSubsystem/saveStatus
