@@ -59,6 +59,7 @@ class Settings(AppSettings):
     SEND_STATS_RECORD: bool = False
     FAULT_RECORD_URL: str = 'http://192.168.32.160:8180/api/rest/InsertSrvAlert'
     STATS_RECORD_URL: str = 'http://192.168.32.160:8180/api/rest/InsertSrvLife'
+    SYS_STATUS_URL: str = 'http://172.20.250.88:8080/gate/METRO-SELFCHECK/api/faultRecordsSubsystem/saveStatus'
 
 settings = Settings(_env_file=os.path.join(BASE_DIR, '.env'))
 
