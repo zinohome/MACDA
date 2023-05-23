@@ -236,7 +236,7 @@ services:
     #ports:
     #  - 5432:5432
     volumes:
-      - "/data/MACDA/timescaledb/data:/home/postgres/pgdata/data"
+      - "/data/MACDA/timescaledb/data:/home/postgres/pgdata"
     #healthcheck:
     #    test: ["CMD", "netstat", "-anp", "|", "grep 5432", "||", "exit 1"]
     #    interval: 30s

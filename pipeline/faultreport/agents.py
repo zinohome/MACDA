@@ -57,7 +57,8 @@ async def on_started():
                         pdata['station2'] = str(au.getvalue('alertcode',field,'station2'))
                         pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
                         pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
-                        pdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
+                        #pdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
+                        pdata['starttime'] = int(time.mktime(time.strptime(item['time'].strftime("%Y-%m-%d %H:%M:%S"))))
                         pdata['endtime'] = '0'
                         predict_data_list.append(pdata)
     #log.debug('predict_data_list is : %s' % predict_data_list)
@@ -89,7 +90,8 @@ async def on_started():
                         fdata['station2'] = str(au.getvalue('alertcode', field, 'station2'))
                         fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
                         fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
-                        fdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
+                        #fdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
+                        fdata['starttime'] = int(time.mktime(time.strptime(item['time'].strftime("%Y-%m-%d %H:%M:%S"))))
                         fdata['endtime'] = '0'
                         fault_data_list.append(fdata)
     #log.debug('fault_data_list is : %s' % fault_data_list)
