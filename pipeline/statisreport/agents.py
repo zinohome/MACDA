@@ -44,6 +44,9 @@ async def on_started():
                 for code in au.partcodefield:
                     sdata = {}
                     sdata['lineName'] = str(line_no)
+                    sdata['line_name'] = '5'
+                    if "3" in sdata['lineName'].replace(" ",""):
+                        sdata['line_name'] = '3S'
                     sdata['trainType'] = 'B2'
                     sdata['trainNo'] = trainNo
                     sdata['partCode'] = str(au.getvalue('partcode', code, 'part_code')).replace('500', partCodepre)
