@@ -83,6 +83,11 @@ async def on_started():
                         fdata['message_type'] = '1'
                         fdata['train_type'] = 'B2'
                         fdata['train_no'] = trainNo
+                        fdata['line_name'] = str(line_no).replace(" ", "")
+                        if "3" in fdata['line_name']:
+                            fdata['line_name'] = '3S'
+                        if "5" in fdata['line_name']:
+                            fdata['line_name'] = '5'
                         fdata['coach'] = coachdict[carbin_no]
                         fdata['location'] = au.getvalue('alertcode', field, 'location')
                         fdata['code'] = au.getvalue('alertcode', field, 'code').replace('HVAC1', f"HVAC{carbin_no}")
