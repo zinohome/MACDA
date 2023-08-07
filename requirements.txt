@@ -1,7 +1,7 @@
+pydantic==1.10.2
 faust-streaming>=0.10.0
 python-schema-registry-client>=2.4.1
 pydantic[dotenv]>=0.21.0
-pydantic_settings>=2.0.2
 loguru>=0.6.0
 pytz>=2022.7
 requests>=2.28.1
