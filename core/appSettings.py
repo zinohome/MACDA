@@ -10,8 +10,8 @@
 #  @Software: MACDA
 import ssl
 from ssl import SSLContext
-
-from pydantic import BaseSettings, Field, validator, root_validator
+from pydantic_settings import BaseSettings
+from pydantic import Field, validator, root_validator
 
 
 class AppSettings(BaseSettings):
