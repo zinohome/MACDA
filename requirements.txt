@@ -1,3 +1,4 @@
+pydantic==1.10.2
 faust-streaming>=0.10.0
 python-schema-registry-client>=2.4.1
 pydantic[dotenv]>=0.21.0
