@@ -20,7 +20,7 @@ import time
 
 @app.crontab('0 1 * * *', tz=pytz.timezone('Asia/Shanghai'), on_leader=True)
 async def life_report():
-    coachdict = {'1':'Tc1','2':'Mp1','3':'M1','4':'M2','5':'Mp2','6':'Tc2',}
+    coachdict = {'1':'Tc1','2':'Mp1','3':'M1','4':'M2','5':'Mp2','6':'Tc2'}
     devicedict = {'EF_U1': '16001',
                   'CF_U1': '16002',
                   'Comp_U11': '16003',
