@@ -7,6 +7,7 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: MACDA
+import pytz
 
 from app import app
 from core.settings import settings
@@ -17,10 +18,23 @@ from utils.tsutil import TSutil
 import time
 
 
-@app.timer(interval=settings.SEND_STATS_INTERVAL)
-async def on_started():
+@app.crontab('0 1 * * *', tz=pytz.timezone('Asia/Shanghai'), on_leader=True)
+async def life_report():
     coachdict = {'1':'Tc1','2':'Mp1','3':'M1','4':'M2','5':'Mp2','6':'Tc2',}
-    log.debug("==========********** Get Statistic report data batch ==========**********")
+    devicedict = {'EF_U1': '16001',
+                  'CF_U1': '16002',
+                  'Comp_U11': '16003',
+                  'Comp_U12': '16004',
+                  'FAD_U1': '16005',
+                  'RAD_U1': '16006',
+                  'EF_U2': '16007',
+                  'CF_U2': '16008',
+                  'Comp_U21': '16009',
+                  'Comp_U22': '160010',
+                  'FAD_U2': '160011',
+                  'RAD_U2': '160012',
+                  }
+    log.debug("==========********** Get Life report data batch ==========**********")
     tu = TSutil()
     au = Alertutil()
     dev_mode = settings.DEV_MODE
