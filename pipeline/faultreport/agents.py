@@ -50,6 +50,11 @@ async def on_started():
                         pdata['message_type'] = '1'
                         pdata['train_type'] = 'B2'
                         pdata['train_no'] = trainNo
+                        pdata['line_name'] = str(line_no).replace(" ", "")
+                        if "3" in pdata['line_name']:
+                            pdata['line_name'] = '3S'
+                        if "5" in pdata['line_name']:
+                            pdata['line_name'] = '5'
                         pdata['coach'] = coachdict[carbin_no]
                         pdata['location'] = au.getvalue('alertcode',field,'location')
                         pdata['code'] = au.getvalue('alertcode',field,'code').replace('HVAC1',f"HVAC{carbin_no}")
@@ -59,7 +64,8 @@ async def on_started():
                         pdata['subsystem'] = str(au.getvalue('alertcode',field,'subsystem'))
                         #pdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
                         pdata['starttime'] = int(time.mktime(time.strptime(item['time'].strftime("%Y-%m-%d %H:%M:%S"))))
-                        pdata['endtime'] = '0'
+                        #pdata['endtime'] = '0'
+                        pdata['endtime'] = 0
                         predict_data_list.append(pdata)
     #log.debug('predict_data_list is : %s' % predict_data_list)
     au.send_predict(predict_data_list)
@@ -97,7 +103,8 @@ async def on_started():
                         fdata['subsystem'] = str(au.getvalue('alertcode', field, 'subsystem'))
                         #fdata['starttime'] = item['time'].strftime("%Y-%m-%d %H:%M:%S")
                         fdata['starttime'] = int(time.mktime(time.strptime(item['time'].strftime("%Y-%m-%d %H:%M:%S"))))
-                        fdata['endtime'] = '0'
+                        #fdata['endtime'] = '0'
+                        fdata['endtime'] = 0
                         fault_data_list.append(fdata)
     #log.debug('fault_data_list is : %s' % fault_data_list)
     au.send_predict(fault_data_list)
