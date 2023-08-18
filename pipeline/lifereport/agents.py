@@ -43,7 +43,7 @@ async def life_report():
     else:
         statis_data = tu.get_statis_data('pro')
     # Generata statis data
-    statis_data_list = []
+    life_data_list = []
     if statis_data['len'] > 0:
         for item in statis_data['data']:
             dvc_no = item['msg_calc_dvc_no']
@@ -57,12 +57,12 @@ async def life_report():
                 # log.debug('line_no: %s, train_no: %s, carbin_no: %s' % (line_no, train_no, carbin_no))
                 for code in au.partcodefield:
                     sdata = {}
-                    sdata['lineName'] = str(line_no)
-                    sdata['line_name'] = str(line_no).replace(" ", "")
-                    if "3" in sdata['line_name']:
-                        sdata['line_name'] = '3S'
-                    if "5" in sdata['line_name']:
-                        sdata['line_name'] = '5'
+                    line_name = str(line_no).replace(" ", "")
+                    sdata['lineName'] = line_name
+                    if "3" in line_name:
+                        sdata['lineName'] = '3S'
+                    if "5" in line_name:
+                        sdata['lineName'] = '5'
                     sdata['trainType'] = 'B2'
                     sdata['trainNo'] = trainNo
                     sdata['partCode'] = str(au.getvalue('partcode', code, 'part_code')).replace('500', partCodepre)
@@ -73,6 +73,6 @@ async def life_report():
                         sdata['serviceTime'] = item[f"dvc_{code}"]
                         sdata['serviceValue'] = 0
                     sdata['mileage'] = 0
-                    statis_data_list.append(sdata)
-    #log.debug('statis_data_list is : %s' % statis_data_list)
-    au.send_statistics(statis_data_list)
+                    life_data_list.append(sdata)
+    log.debug('life_data_list is : %s' % life_data_list)
+    au.send_statistics(life_data_list)
