@@ -18,7 +18,8 @@ from utils.tsutil import TSutil
 import time
 
 
-@app.crontab('0 1 * * *', tz=pytz.timezone('Asia/Shanghai'), on_leader=True)
+#@app.crontab('0 1 * * *', tz=pytz.timezone('Asia/Shanghai'), on_leader=True)
+@app.timer(interval=settings.SEND_STATS_INTERVAL)
 async def life_report():
     coachdict = {'1':'Tc1','2':'Mp1','3':'M1','4':'M2','5':'Mp2','6':'Tc2'}
     devicedict = {'EF_U1': '16001',
@@ -66,13 +67,11 @@ async def life_report():
                     sdata['trainType'] = 'B2'
                     sdata['trainNo'] = trainNo
                     sdata['partCode'] = str(au.getvalue('partcode', code, 'part_code')).replace('500', partCodepre)
-                    if 'rad' in code or 'fad' in code:
-                        sdata['serviceTime'] = 0
-                        sdata['serviceValue'] = item[f"dvc_{code}"]
-                    else:
-                        sdata['serviceTime'] = item[f"dvc_{code}"]
-                        sdata['serviceValue'] = 0
+                    sdata['serviceTime'] = int(round(time.time() * 1000))
+                    sdata['serviceValue'] = item[f"dvc_{code}"]
                     sdata['mileage'] = 0
+                    sdata['useTime'] = 0
+                    sdata['flag'] = 0
                     life_data_list.append(sdata)
     log.debug('life_data_list is : %s' % life_data_list)
-    au.send_statistics(life_data_list)
+    au.send_lifereport(life_data_list)

@@ -420,10 +420,11 @@ class TSutil(metaclass=Cached):
         return datetime(int(year_s), int(mon_s), int(day_s), int(hour_s), int(minute_s), int(second_s))
 
 if __name__ == '__main__':
+    '''
     tu = TSutil()
     jobj = {"schema":"s1","playload":"p1"}
     #tu.insert('dev_macda', jobj)
-    '''
+    
     result = tu.get_refdata('dev', '5-98-2')
     if result['len'] > 0:
         log.debug(result['data']['msg_calc_dvc_no'])
@@ -433,7 +434,7 @@ if __name__ == '__main__':
     result = tu.get_sensordata('dev', '5-98-2')
     if result['len'] > 0:
         log.debug(result['data']['rat_sub'])
-    '''
+
     result = tu.get_predictdata('dev', '5-98-2')
     if result['len'] > 0:
         log.debug(result['data']['rat_sub'])
@@ -451,4 +452,9 @@ if __name__ == '__main__':
     log.debug(pc['aaa'])
     log.debug(pc['ddd'])
     log.debug(pc['ccc'])
+    '''
+    import time
 
+    now = int(round(time.time()*1000))
+
+    print(now)
