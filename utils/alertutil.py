@@ -38,6 +38,7 @@ class Alertutil(metaclass=Cached):
         self.__alertcode__['name'] = self.__alertcode__['name'].apply(str.lower)
         self.__partcode__ = pd.read_excel(partcodefile)
         self.__partcode__['name'] = self.__partcode__['name'].apply(str.lower)
+        #log.debug(self.__partcode__['name'])
         log.debug('Code loaded.')
 
     def getvalue(self, codetype, rowvalue, colname):
@@ -127,6 +128,8 @@ class Alertutil(metaclass=Cached):
 
 if __name__ == '__main__':
     au = Alertutil()
+    log.debug(str(au.getvalue('partcode', 'dwOPCount_FAD_U1'.lower(), 'part_code')))
+    '''
     tu = TSutil()
     coachdict = {'1':'Tc1','2':'Mp1','3':'M1','4':'M2','5':'Mp2','6':'Tc2',}
     dev_mode = settings.DEV_MODE
@@ -236,7 +239,8 @@ if __name__ == '__main__':
 
     log.debug(au.predictfield)
     log.debug(au.alertfield)
-    '''
+    
+    
     log.debug(f"SELECT msg_calc_dvc_no, max({') as dvc_, max('.join(au.predictfield)}) as dvc_ FROM dev_predict WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
     log.debug(f"SELECT msg_calc_dvc_no, max(dvc_{') as dvc_, max(dvc_'.join(au.alertfield)}) as dvc_ FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")
     log.debug(f"SELECT msg_calc_dvc_no, last(dvc_{',msg_calc_parse_time) as dvc_, last(dvc_'.join(au.partcodefield)},msg_calc_parse_time) as dvc_ FROM dev_macda WHERE msg_calc_parse_time > now() - INTERVAL '2 minutes' group by msg_calc_dvc_no")

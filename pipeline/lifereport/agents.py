@@ -66,9 +66,13 @@ async def life_report():
                         sdata['lineName'] = '5'
                     sdata['trainType'] = 'B2'
                     sdata['trainNo'] = trainNo
-                    sdata['partCode'] = str(au.getvalue('partcode', code, 'part_code')).replace('500', partCodepre)
+                    //sdata['partCode'] = str(au.getvalue('partcode', code, 'part_code')).replace('500', partCodepre)
+                    sdata['partCode'] = str(au.getvalue('partcode', code.lower(), 'part_code')).replace('500', partCodepre)
                     sdata['serviceTime'] = int(round(time.time() * 1000))
-                    sdata['serviceValue'] = item[f"dvc_{code}"]
+                    if 'rad' in code or 'fad' in code:
+                        sdata['serviceValue'] = item[f"dvc_{code}"]
+                    else:
+                        sdata['serviceValue'] = 0
                     sdata['mileage'] = 0
                     sdata['useTime'] = 0
                     sdata['flag'] = 0
